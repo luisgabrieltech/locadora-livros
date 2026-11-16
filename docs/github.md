@@ -37,7 +37,7 @@ Procedimento de publicação e integração (branches publicadas e PR aberto em 
 
 Criar o workflow e validar localmente não comprova sucesso no runner GitHub. Após cada push, conferir o resultado correspondente ao último SHA do PR; um resultado anterior não comprova o estado do commit novo. Proteção de main e merge permanecem pendentes. Não adicionar badge com sucesso presumido.
 
-Licença do código da aplicação ainda não definida; o usuário deve escolhê-la antes de anunciar condições de reutilização. Os avisos Apache dos scripts Maven Wrapper foram preservados.
+Licença MIT adotada para o código original da aplicação, por escolha delegada pelo usuário. Texto em [LICENSE](../LICENSE), com atribuição a luisgabrieltech. Componentes de terceiros mantêm suas próprias licenças; os avisos Apache dos scripts Maven Wrapper foram preservados.
 
 ### Autenticação do Git local
 
