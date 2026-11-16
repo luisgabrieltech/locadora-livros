@@ -43,3 +43,11 @@ Relatório e critérios em [revisao-mvp.md](revisao-mvp.md). Situação após a 
 - Critérios de aceitação: excluir .env/IDE/build/caches do versionamento; separar base e CI em commits; validar workflow; reproduzir clean verify com arquivos versionados sem .env; documentar limitações e pendências remotas.
 - Validação: actionlint, verificação do índice/diff Git, sintaxe do Wrapper e clean verify em cópia limpa extraída do commit.
 - Estado: preparação local concluída e validada. actionlint e Wrapper/sintaxe/diff aprovados; clean verify na cópia limpa aprovou 113 testes. Branches publicadas no repositório autorizado e PR #1 aberto. Conferir a execução GitHub do último SHA; merge e proteção de main continuam pendentes. Detalhes em github.md.
+
+## FRONT-001 — Base Angular, login e Clientes
+- Objetivo: permitir ao operador autenticar-se e listar/cadastrar/editar clientes no navegador local.
+- Estado: escopo aprovado, implementado e validado localmente; 19 testes Angular, formatação, build, fluxo real no navegador e inspeção de acessibilidade aprovados. CI combinada deve ser conferida no último SHA do PR antes de integrar. Critérios em frontend.md e ADR-009.
+- Dependências: contratos CLI-001, Basic/CSRF, Node 24.19.0 e API local.
+- Escopo: frontend/, login/logout, rota protegida, Clientes paginados, formulários, erros, layout desktop/mobile e checks de frontend dentro da CI obrigatória existente.
+- Validação: formatação, Vitest/HTTP simulado, build, fluxo real em navegador e regressão Java pela CI. Nenhuma alteração de regra ou schema.
+- Próximas entregas: FRONT-002 catálogo/exemplares; FRONT-003 locações, devoluções e quitação.

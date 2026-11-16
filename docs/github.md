@@ -12,13 +12,13 @@ O arquivo [.github/workflows/ci.yml](../.github/workflows/ci.yml) executa em pus
 
 1. Checkout com permissão de leitura e sem persistir credenciais no Git.
 2. Temurin Java 22, mantendo a versão aprovada do projeto, e cache de dependências Maven.
-3. Verificação do Docker do runner ubuntu-24.04.
-4. Maven Wrapper 3.9.9: `sh ./mvnw --batch-mode --no-transfer-progress clean verify`.
-5. Se houver falha, disponibilizar relatórios Surefire/Failsafe por sete dias, quando existirem.
+3. Node 24.19.0 e cache npm pelo lockfile frontend/package-lock.json; npm ci, formatação Prettier, testes Vitest e build Angular.
+4. Verificação do Docker do runner ubuntu-24.04 e Maven Wrapper 3.9.9: `sh ./mvnw --batch-mode --no-transfer-progress clean verify`.
+5. Se houver falha, disponibilizar relatórios Surefire/Failsafe e JUnit do frontend por sete dias, quando existirem.
 
-Testcontainers cria seus próprios bancos PostgreSQL e credenciais sintéticas. Não configurar .env, secrets do projeto, banco Compose ou serviço PostgreSQL adicional na pipeline. Os testes falham se o Docker não estiver disponível. Não há publicação de pacote, imagem Docker ou deploy.
+Testes unitários Angular usam HTTP simulado, sem API real. Testcontainers cria seus próprios bancos PostgreSQL e credenciais sintéticas. Não configurar .env, secrets do projeto, banco Compose ou serviço PostgreSQL adicional na pipeline. Os testes falham se o Docker não estiver disponível. Não há publicação de pacote, imagem Docker ou deploy.
 
-As três Actions oficiais são fixadas por SHA de commit, verificados nas tags públicas v7 (checkout), v6 (setup-java) e v7 (upload-artifact) em 16/11/2026. Ao atualizar, conferir o commit, o changelog e executar novamente a validação. Fontes: [checkout](https://github.com/actions/checkout), [setup-java](https://github.com/actions/setup-java), [upload-artifact](https://github.com/actions/upload-artifact) e [Maven no GitHub Actions](https://docs.github.com/en/actions/tutorials/build-and-test-code/java-with-maven).
+As Actions oficiais de checkout, Java e upload são fixadas por SHA de commit, verificados nas tags públicas v7 (checkout), v6 (setup-java) e v7 (upload-artifact) em 16/11/2026. Ao atualizar, conferir o commit, o changelog e executar novamente a validação. Fontes: [checkout](https://github.com/actions/checkout), [setup-java](https://github.com/actions/setup-java), [upload-artifact](https://github.com/actions/upload-artifact) e [Maven no GitHub Actions](https://docs.github.com/en/actions/tutorials/build-and-test-code/java-with-maven).
 
 ## Preparação e publicação
 
@@ -59,3 +59,6 @@ Concluir o login diretamente no GitHub; não incluir senhas ou tokens em comando
 
 ## Publicação autorizada — 16/11/2026
 Origin configurado para luisgabrieltech/locadora-livros e branches main/chore/github-ci publicadas sem force push. [PR #1](https://github.com/luisgabrieltech/locadora-livros/pull/1) aberto para main. A CI é acionada pelos commits do PR; consultar o check Build e testes do último SHA antes de integrar. A aprovação de merge continua com o usuário. Nenhum merge, deploy ou configuração de proteção foi realizado. A criação do PR utilizou a autenticação Git local porque o conector GitHub retornou 403 para escrita de PR; leituras de CI permanecem disponíveis pelo conector.
+
+## CI frontend — FRONT-001
+O check obrigatório continua se chamando Build e testes e passa a incluir backend e frontend no mesmo job. setup-node usa SHA 949feb2413d6458794dcd2491c4babbbce0c15c1 (tag v7 conferida) e frontend/.node-version; cache npm usa o lockfile. Report Vitest em frontend/test-results/vitest.xml e relatórios Java são anexados em falhas quando existirem. A inclusão de testes frontend não renomeia o check exigido pela proteção de main. [Action oficial setup-node](https://github.com/actions/setup-node).
