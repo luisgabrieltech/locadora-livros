@@ -26,7 +26,7 @@ Repositório de destino definido pelo usuário: https://github.com/luisgabrielte
 
 .gitignore exclui .env, diretórios da IDE, target e caches de build. .env.example contém apenas configuração sem senhas funcionais. Antes de cada commit, revisar `git status`, o diff e `git diff --cached --check`; não adicionar logs ou dados reais para demonstrar o projeto.
 
-Próxima etapa externa, após definir e autorizar o repositório de destino:
+Procedimento de publicação e integração (branches publicadas e PR aberto em 16/11/2026; integração e proteção ainda pendentes):
 
 1. Criar um repositório vazio no GitHub com nome e visibilidade definidos pelo usuário. Não gerar outro README no remoto, para evitar históricos independentes.
 2. Configurar origin com a URL real. Não incluir tokens na URL nem nos arquivos.
@@ -35,7 +35,7 @@ Próxima etapa externa, após definir e autorizar o repositório de destino:
 5. Após o primeiro check bem-sucedido, configurar proteção de main/ruleset para exigir PR e o check Build e testes, conforme os recursos disponíveis na conta. Essa configuração não é aplicada apenas por versionar o workflow.
 6. Integrar após aprovação e acompanhar a execução em main.
 
-Criar o workflow e validar localmente não comprova sucesso no runner GitHub. A primeira execução remota, configuração de proteção e eventual publicação permanecem pendentes até serem realizadas. Não adicionar badge com sucesso presumido.
+Criar o workflow e validar localmente não comprova sucesso no runner GitHub. Após cada push, conferir o resultado correspondente ao último SHA do PR; um resultado anterior não comprova o estado do commit novo. Proteção de main e merge permanecem pendentes. Não adicionar badge com sucesso presumido.
 
 Licença do código da aplicação ainda não definida; o usuário deve escolhê-la antes de anunciar condições de reutilização. Os avisos Apache dos scripts Maven Wrapper foram preservados.
 
@@ -56,3 +56,6 @@ Concluir o login diretamente no GitHub; não incluir senhas ou tokens em comando
 - Base c39c186 extraída com git archive para target/ci-smoke, sem .env, IDE ou builds anteriores. Maven Wrapper executado nessa cópia com JDK 22: clean verify aprovado, 53 Surefire + 60 Failsafe = 113 testes, zero falhas/erros/ignorados. Seis pools Hikari encerrados e nenhum aviso de conexão fechada. Log: target/ci-clean-verify.log.
 - A execução local usou modo offline e cache explícito .sandbox-m2/repository para respeitar as condições da sessão. O workflow usa resolução normal pela rede e runner Linux; download inicial das dependências, setup-java, cache e upload de relatórios no GitHub ainda não foram executados no serviço remoto.
 - Commit inicial do MVP criado em main; configuração CI e documentação em commit separado na branch chore/github-ci. Não há origin, push, PR, merge ou proteção remota configurados nesta etapa.
+
+## Publicação autorizada — 16/11/2026
+Origin configurado para luisgabrieltech/locadora-livros e branches main/chore/github-ci publicadas sem force push. [PR #1](https://github.com/luisgabrieltech/locadora-livros/pull/1) aberto para main. A CI é acionada pelos commits do PR; consultar o check Build e testes do último SHA antes de integrar. A aprovação de merge continua com o usuário. Nenhum merge, deploy ou configuração de proteção foi realizado. A criação do PR utilizou a autenticação Git local porque o conector GitHub retornou 403 para escrita de PR; leituras de CI permanecem disponíveis pelo conector.
