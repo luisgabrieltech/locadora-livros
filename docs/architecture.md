@@ -38,3 +38,6 @@ Pagamento é uma transição do item devolvido, sem novo cálculo de cobrança o
 
 ## Consultas operacionais
 Filtros por situação/cliente e indicadores derivados na listagem. SQL agregada por locação com projeção, paginação e contagem no PostgreSQL, sem carregar coleções de itens para cada resumo. Contrato em [consultas-locacoes-api.md](consultas-locacoes-api.md) e alternativas/consequências no [ADR-008](decisions/008-consultas-operacionais.md).
+
+## Interface Angular local
+Workspace frontend/ com Angular 22, TypeScript estrito, componentes standalone e formulários reativos. Primeiro recorte: login e Clientes. Proxy local para a API, Basic/CSRF em memória e validação de negócio preservada no Spring. Decisão no [ADR-009](decisions/009-frontend-angular-local.md), execução e testes em [frontend.md](frontend.md). O JAR continua sendo apenas a API; não há SSR ou deploy no escopo.
