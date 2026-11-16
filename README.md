@@ -97,6 +97,12 @@ O pacote é gerado em target/locadora-livros-0.1.0-SNAPSHOT.jar. Para executá-l
 java -jar target/locadora-livros-0.1.0-SNAPSHOT.jar
 ```
 
+## Integração contínua e colaboração
+
+A [pipeline de CI](.github/workflows/ci.yml) está preparada para pull requests destinados a main, pushes em main e execução manual. Usa Java 22, Maven Wrapper e Docker para rodar clean verify. Em caso de falha, disponibiliza os relatórios dos testes por sete dias. Nenhum secret do projeto ou .env é necessário para os testes.
+
+O workflow foi preparado localmente; sua execução no GitHub e a proteção de main ainda dependem da publicação do repositório e da primeira execução remota. Consulte [fluxo Git/GitHub e checklist de publicação](docs/github.md). Há um template de Pull Request com objetivo, alterações, validação e riscos.
+
 ## Usar PostgreSQL já instalado
 
 O banco do Compose é uma conveniência. Para usar sua instalação local, configure em .env POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD e DB_PORT conforme um banco dedicado ao projeto, com usuário autorizado a criar o schema locadora. Crie esse banco antes de iniciar a API; o Flyway cria o schema e controla as migrações. Não use um banco com dados de outros projetos.

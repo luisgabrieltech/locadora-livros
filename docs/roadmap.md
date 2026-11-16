@@ -25,7 +25,7 @@ Estrutura executável → clientes → catálogo/exemplares → locações → d
 
 ## Próximos passos para alinhamento
 - Revisar o checklist funcional do MVP, incluindo consultas operacionais de locações abertas/atrasadas e histórico, antes de declarar o produto integralmente concluído.
-- Organizar Git/GitHub, CI e documentação para reprodução do portfólio. Nenhum push, PR ou publicação foi realizado nesta entrega.
+- Preparação local de Git/GitHub e CI em PORT-001 abaixo. Primeiro push, PR e execução remota permanecem pendentes.
 - Ciclo de vida dos contextos Spring/containers corrigido e validado na REV-004. Preservar o encerramento por classe nas próximas integrações.
 ## Resultado da revisão do MVP (16/11/2026)
 Relatório e critérios em [revisao-mvp.md](revisao-mvp.md). Situação após a revisão e a entrega de correções:
@@ -33,4 +33,13 @@ Relatório e critérios em [revisao-mvp.md](revisao-mvp.md). Situação após a 
 - REV-002 (P2): concluída; prazos fora da faixa persistível retornam 400, com regressão HTTP e limite válido testados. Verify aprovado: 110 testes.
 - REV-003 (P2): implementada e validada; filtros por situação/cliente e indicadores no resumo, paginação no banco sem duplicar locações. Contrato em [consultas-locacoes-api.md](consultas-locacoes-api.md), decisão no ADR-008. Verify aprovado: 113 testes.
 - REV-004 (P3): concluída com DirtiesContext AFTER_CLASS nas seis classes de integração. Verify aprovado: 113 testes; seis pools encerrados e zero avisos de conexão fechada.
-- Preparo do portfólio: Git/remoto, CI com Docker/JDK 22 e padronização mínima de código. Ainda não declarar MVP integralmente concluído.
+- Preparo do portfólio: base Git local criada e pipeline com Docker/JDK 22 preparada em PORT-001; publicação, execução remota, proteção de main e avaliação de padronização automatizada ainda pendentes.
+
+## PORT-001 — Versionamento local e CI
+
+- Objetivo/contexto: permitir revisão de mudanças e validação reproduzível do portfólio no GitHub.
+- Escopo: repositório Git local em main, commit de base do MVP, branch chore/github-ci, workflow de build/testes e template de PR. Sem publicação ou deploy.
+- Dependências: MVP e REV-001 a REV-004 validados; JDK 22, Maven Wrapper e Docker disponíveis.
+- Critérios de aceitação: excluir .env/IDE/build/caches do versionamento; separar base e CI em commits; validar workflow; reproduzir clean verify com arquivos versionados sem .env; documentar limitações e pendências remotas.
+- Validação: actionlint, verificação do índice/diff Git, sintaxe do Wrapper e clean verify em cópia limpa extraída do commit.
+- Estado: preparação local concluída e validada. actionlint e Wrapper/sintaxe/diff aprovados; clean verify na cópia limpa aprovou 113 testes. Publicação, PR, execução GitHub e proteção de main continuam pendentes; detalhes em github.md.
