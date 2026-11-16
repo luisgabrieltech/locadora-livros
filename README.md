@@ -108,7 +108,7 @@ java -jar target/locadora-livros-0.1.0-SNAPSHOT.jar
 
 A [pipeline de CI](.github/workflows/ci.yml) está preparada para pull requests destinados a main, pushes em main e execução manual. Usa Java 22, Maven Wrapper e Docker para rodar clean verify. Em caso de falha, disponibiliza os relatórios dos testes por sete dias. Nenhum secret do projeto ou .env é necessário para os testes.
 
-As branches foram publicadas e a integração da pipeline está no [PR #1](https://github.com/luisgabrieltech/locadora-livros/pull/1). Confira o resultado correspondente ao último commit na aba Checks do PR ou em [Actions](https://github.com/luisgabrieltech/locadora-livros/actions). A proteção de main ainda depende de configuração no GitHub. Consulte [fluxo Git/GitHub e checklist de publicação](docs/github.md). Há um template de Pull Request com objetivo, alterações, validação e riscos.
+As branches foram publicadas e a pipeline foi integrada pelo [PR #1](https://github.com/luisgabrieltech/locadora-livros/pull/1). Confira o resultado correspondente ao último commit na aba Checks do PR ou em [Actions](https://github.com/luisgabrieltech/locadora-livros/actions). A main exige PR, check Build e testes aprovado e branch atualizada antes do merge, inclusive para administradores. Force push e exclusão estão bloqueados. Consulte [fluxo Git/GitHub e checklist de publicação](docs/github.md). Há um template de Pull Request com objetivo, alterações, validação e riscos.
 
 ## Usar PostgreSQL já instalado
 

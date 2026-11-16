@@ -2,7 +2,7 @@
 
 ## Estado e fluxo
 
-Repositório local inicializado em main com um commit de base do MVP já construído e validado. Esse commit reúne o trabalho anterior; não representa uma reconstrução artificial de etapas antigas. A preparação do GitHub/CI fica na branch chore/github-ci, separada da base.
+Repositório local inicializado em main com um commit de base do MVP já construído e validado. Esse commit reúne o trabalho anterior; não representa uma reconstrução artificial de etapas antigas. A preparação do GitHub/CI foi integrada em main pelo PR #1. Main local e remota sincronizadas após a integração.
 
 Adotar GitHub Flow: abrir uma branch curta a partir de main, implementar uma alteração coesa, validar, preparar PR e integrar após revisão e aprovação das verificações. Usar os prefixos e Conventional Commits definidos no AGENTS.md. Não editar o histórico publicado para simular entregas anteriores.
 
@@ -26,7 +26,7 @@ Repositório de destino definido pelo usuário: https://github.com/luisgabrielte
 
 .gitignore exclui .env, diretórios da IDE, target e caches de build. .env.example contém apenas configuração sem senhas funcionais. Antes de cada commit, revisar `git status`, o diff e `git diff --cached --check`; não adicionar logs ou dados reais para demonstrar o projeto.
 
-Procedimento de publicação e integração (branches publicadas e PR aberto em 16/11/2026; integração e proteção ainda pendentes):
+Procedimento de publicação e integração (branches publicadas, PR #1 integrado e proteção aplicada em 16/11/2026):
 
 1. Criar um repositório vazio no GitHub com nome e visibilidade definidos pelo usuário. Não gerar outro README no remoto, para evitar históricos independentes.
 2. Configurar origin com a URL real. Não incluir tokens na URL nem nos arquivos.
@@ -35,7 +35,7 @@ Procedimento de publicação e integração (branches publicadas e PR aberto em 
 5. Após o primeiro check bem-sucedido, configurar proteção de main/ruleset para exigir PR e o check Build e testes, conforme os recursos disponíveis na conta. Essa configuração não é aplicada apenas por versionar o workflow.
 6. Integrar após aprovação e acompanhar a execução em main.
 
-Criar o workflow e validar localmente não comprova sucesso no runner GitHub. Após cada push, conferir o resultado correspondente ao último SHA do PR; um resultado anterior não comprova o estado do commit novo. Proteção de main e merge permanecem pendentes. Não adicionar badge com sucesso presumido.
+Criar o workflow e validar localmente não comprova sucesso no runner GitHub. Após cada push, conferir o resultado correspondente ao último SHA do PR; um resultado anterior não comprova o estado do commit novo. O PR #1 foi integrado após a CI aprovada; novos merges continuam dependendo da aprovação do usuário e das verificações obrigatórias. Não adicionar badge com sucesso presumido.
 
 Licença do código da aplicação ainda não definida; o usuário deve escolhê-la antes de anunciar condições de reutilização. Os avisos Apache dos scripts Maven Wrapper foram preservados.
 
@@ -59,3 +59,16 @@ Concluir o login diretamente no GitHub; não incluir senhas ou tokens em comando
 
 ## Publicação autorizada — 16/11/2026
 Origin configurado para luisgabrieltech/locadora-livros e branches main/chore/github-ci publicadas sem force push. [PR #1](https://github.com/luisgabrieltech/locadora-livros/pull/1) aberto para main. A CI é acionada pelos commits do PR; consultar o check Build e testes do último SHA antes de integrar. A aprovação de merge continua com o usuário. Nenhum merge, deploy ou configuração de proteção foi realizado. A criação do PR utilizou a autenticação Git local porque o conector GitHub retornou 403 para escrita de PR; leituras de CI permanecem disponíveis pelo conector.
+
+## Proteção de main — aplicada em 16/11/2026
+
+- Pull Request obrigatório, inclusive para administradores; não enviar commits diretamente a main.
+- Check Build e testes obrigatório, vinculado ao GitHub Actions (app ID 15368), com sucesso antes do merge.
+- Branch precisa estar atualizada com main (strict=true). Se main avançar, atualizar a branch pelo fluxo normal e conferir os novos checks.
+- Nenhuma aprovação externa obrigatória (required_approving_review_count=0), adequado ao projeto individual. Isso não substitui o alinhamento de merge com o usuário definido no AGENTS.md.
+- Force push e exclusão de main bloqueados. Não há bypass de administradores configurado.
+- Política consultada novamente pela API após aplicação; os campos configurados foram confirmados. Nenhum push destrutivo foi executado para testar a regra.
+
+O PR #1 foi integrado no commit 7b4977b6b893cc029fba05e36361bebf855d85de. A [CI após integração em main](https://github.com/luisgabrieltech/locadora-livros/actions/runs/43890303548) aprovou 113 testes (53 Surefire e 60 Failsafe), sem falhas, erros ou ignorados. Os registros de publicação anteriores descrevem os estados daquela etapa; esta seção registra o estado posterior.
+
+Fonte da configuração: [API de proteção de branches do GitHub](https://docs.github.com/en/rest/branches/branch-protection#update-branch-protection). Licença do código e padronização automatizada de Java continuam como decisões separadas.
