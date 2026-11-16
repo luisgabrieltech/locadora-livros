@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: locadora-livros
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:${DB_PORT:5432}/${POSTGRES_DB:locadora}
+    username: ${POSTGRES_USER:locadora}
+    password: ${POSTGRES_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: locadora
+  flyway:
+    enabled: true
+    clean-disabled: true
+
+server:
+  address: 127.0.0.1
+  port: 8080
+  servlet:
+    session:
+      tracking-modes: cookie
+  error:
+    include-message: never
+    include-stacktrace: never
+
+app:
+  time-zone: ${APP_TIME_ZONE:America/Sao_Paulo}
+  locacao:
+    diaria: ${LOCACAO_DIARIA:2.00}
+    multa-diaria: ${LOCACAO_MULTA_DIARIA:1.00}
+  operator:
+    username: ${APP_USERNAME}
+    password: ${APP_PASSWORD}
+
+# Violações de constraints podem incluir CPF no detalhe SQL do driver.
+# O handler registra falhas inesperadas sem valores ou SQL.
+logging:
+  level:
+    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: "OFF"
+    org.hibernate.orm.jdbc.error: "OFF"
