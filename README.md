@@ -43,6 +43,13 @@ Não é necessário instalar Maven globalmente.
 
 ## Executar no PowerShell
 
+Clone o repositório e entre na pasta:
+
+```powershell
+git clone https://github.com/luisgabrieltech/locadora-livros.git
+cd locadora-livros
+```
+
 Abra o terminal na raiz do projeto. Crie o arquivo de configuração:
 
 ```powershell

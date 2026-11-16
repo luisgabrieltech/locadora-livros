@@ -22,6 +22,8 @@ As três Actions oficiais são fixadas por SHA de commit, verificados nas tags p
 
 ## Preparação e publicação
 
+Repositório de destino definido pelo usuário: https://github.com/luisgabrieltech/locadora-livros. O origin local aponta para https://github.com/luisgabrieltech/locadora-livros.git. Repositório público conferido vazio antes do primeiro envio.
+
 .gitignore exclui .env, diretórios da IDE, target e caches de build. .env.example contém apenas configuração sem senhas funcionais. Antes de cada commit, revisar `git status`, o diff e `git diff --cached --check`; não adicionar logs ou dados reais para demonstrar o projeto.
 
 Próxima etapa externa, após definir e autorizar o repositório de destino:
@@ -36,6 +38,16 @@ Próxima etapa externa, após definir e autorizar o repositório de destino:
 Criar o workflow e validar localmente não comprova sucesso no runner GitHub. A primeira execução remota, configuração de proteção e eventual publicação permanecem pendentes até serem realizadas. Não adicionar badge com sucesso presumido.
 
 Licença do código da aplicação ainda não definida; o usuário deve escolhê-la antes de anunciar condições de reutilização. Os avisos Apache dos scripts Maven Wrapper foram preservados.
+
+### Autenticação do Git local
+
+O acesso do conector GitHub não autentica automaticamente o Git instalado no Windows. Caso o push solicite autenticação, executar no PowerShell:
+
+```powershell
+git credential-manager github login --username luisgabrieltech --browser
+```
+
+Concluir o login diretamente no GitHub; não incluir senhas ou tokens em comandos versionados, URLs do remoto ou conversas. Após autenticar, publicar as branches com `git push --atomic -u origin main chore/github-ci`. Não usar force push para inicializar o repositório.
 
 ## Validação local — 16/11/2026
 
