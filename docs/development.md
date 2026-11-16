@@ -41,7 +41,7 @@ A sessão do agente encontrou acesso negado à configuração e ao named pipe do
 - docker compose up -d --wait: iniciar PostgreSQL e aguardar saúde; requer .env preenchido.
 - docker compose stop: parar o banco sem remover o volume.
 
-A pasta ainda não foi inicializada como repositório Git; não foram criados commits nem enviados arquivos ao GitHub.
+Repositório Git inicializado em main em 16/11/2026, com commit inicial do MVP validado. Preparação de CI na branch chore/github-ci; nenhum remoto ou publicação no GitHub. Fluxo e próximos passos em [github.md](github.md).
 
 ## Ciclo de vida dos testes com PostgreSQL temporário
 
@@ -131,3 +131,6 @@ Filtros de situação/cliente e indicadores no resumo, sem nova migração. Mave
 
 ## REV-004 — Validação de lifecycle (16/11/2026)
 DirtiesContext AFTER_CLASS nas seis classes IT com PostgreSQL. Maven verify offline com JDK 22 e Docker aprovado: 53 Surefire + 60 Failsafe = 113 testes, zero falhas/erros/ignorados. Log target/lifecycle-verify.log: seis pools Hikari encerrados ao final das respectivas classes e nenhum aviso de conexão fechada (antes: 11 em target/consultas-verify.log). Produção, maxLifetime e logs preservados; PostgreSQL pessoal não utilizado. Pendência resolvida; próximo passo é preparar Git/CI para o portfólio.
+
+## PORT-001 — Git local e CI (16/11/2026)
+Git inicializado em main e commit de base c39c186 criado com a identidade já configurada. Branch chore/github-ci para workflow GitHub Actions e documentação, sem remoto/push/merge. actionlint 1.7.12 e bash -n mvnw aprovados. Cópia limpa de git archive, sem .env, validada pelo Maven Wrapper clean verify offline com cache explícito: 53 Surefire + 60 Failsafe = 113 testes, zero falhas/erros/ignorados, seis pools encerrados e zero avisos de conexão fechada. Log target/ci-clean-verify.log. Execução no runner GitHub e proteção de main não verificadas; consulte github.md.
