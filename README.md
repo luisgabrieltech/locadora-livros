@@ -136,4 +136,8 @@ Os dados permanecem no volume. Alterar POSTGRES_PASSWORD no arquivo não troca a
 - Use dados fictícios nas demonstrações. Não versione .env, dados reais ou logs com credenciais/CPF.
 - Reservas, renovação de prazo e tratamento de perda/dano estão fora do MVP.
 
+## Licença
+
+O código original da aplicação está disponível sob a [licença MIT](LICENSE). Os componentes de terceiros mantêm suas próprias licenças.
+
 Os scripts Maven Wrapper vêm do Apache Maven Wrapper 3.3.4, sob Apache License 2.0, com os avisos preservados. Origem: https://github.com/apache/maven-wrapper/tree/maven-wrapper-3.3.4/maven-wrapper-distribution/src/resources .
