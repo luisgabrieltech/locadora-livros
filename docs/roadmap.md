@@ -33,7 +33,7 @@ Relatório e critérios em [revisao-mvp.md](revisao-mvp.md). Situação após a 
 - REV-002 (P2): concluída; prazos fora da faixa persistível retornam 400, com regressão HTTP e limite válido testados. Verify aprovado: 110 testes.
 - REV-003 (P2): implementada e validada; filtros por situação/cliente e indicadores no resumo, paginação no banco sem duplicar locações. Contrato em [consultas-locacoes-api.md](consultas-locacoes-api.md), decisão no ADR-008. Verify aprovado: 113 testes.
 - REV-004 (P3): concluída com DirtiesContext AFTER_CLASS nas seis classes de integração. Verify aprovado: 113 testes; seis pools encerrados e zero avisos de conexão fechada.
-- Preparo do portfólio: base Git local criada e pipeline com Docker/JDK 22 preparada em PORT-001; branches publicadas e PR #1 aberto; conferir CI do último SHA. Merge, proteção de main e avaliação de padronização automatizada ainda pendentes.
+- Preparo do portfólio: base Git local criada e pipeline com Docker/JDK 22 preparada em PORT-001; PR #1 integrado e CI aprovada em main, com 113 testes; proteção de main aplicada. Avaliação de padronização automatizada e licença da aplicação ainda pendentes.
 
 ## PORT-001 — Versionamento local e CI
 
@@ -42,4 +42,4 @@ Relatório e critérios em [revisao-mvp.md](revisao-mvp.md). Situação após a 
 - Dependências: MVP e REV-001 a REV-004 validados; JDK 22, Maven Wrapper e Docker disponíveis.
 - Critérios de aceitação: excluir .env/IDE/build/caches do versionamento; separar base e CI em commits; validar workflow; reproduzir clean verify com arquivos versionados sem .env; documentar limitações e pendências remotas.
 - Validação: actionlint, verificação do índice/diff Git, sintaxe do Wrapper e clean verify em cópia limpa extraída do commit.
-- Estado: preparação local concluída e validada. actionlint e Wrapper/sintaxe/diff aprovados; clean verify na cópia limpa aprovou 113 testes. Branches publicadas no repositório autorizado e PR #1 aberto. Conferir a execução GitHub do último SHA; merge e proteção de main continuam pendentes. Detalhes em github.md.
+- Estado: preparação local concluída e validada. actionlint e Wrapper/sintaxe/diff aprovados; clean verify na cópia limpa aprovou 113 testes. Branches publicadas, PR #1 integrado e CI em main aprovada com 113 testes. Proteção de main aplicada e consultada pela API: PR, check GitHub Actions e branch atualizada obrigatórios, sem bypass de administradores; force push e exclusão bloqueados. Detalhes em github.md.
