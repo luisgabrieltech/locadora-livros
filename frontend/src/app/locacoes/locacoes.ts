@@ -2,7 +2,8 @@ import { DatePipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize, of, switchMap } from 'rxjs';
+import { catchError, finalize, forkJoin, map, of, switchMap } from 'rxjs';
+import { CatalogoService } from '../catalogo/catalogo.service';
 import { mensagemErro, ProblemaApi } from '../core/api-error';
 import { Sidebar } from '../sidebar';
 import { NovaLocacao } from './nova-locacao';
@@ -30,6 +31,8 @@ interface ItemLocacao {
   dataDevolucao: string | null;
   dataPagamento: string | null;
   valorTotal: number | null;
+  codigo?: string;
+  titulo?: string;
 }
 
 interface DetalheLocacao {
@@ -48,6 +51,7 @@ type Operacao = 'devolucoes' | 'pagamentos';
 })
 export class Locacoes {
   private readonly http = inject(HttpClient);
+  private readonly catalogo = inject(CatalogoService);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly criando = signal(false);
   protected readonly sucesso = signal('');
@@ -127,6 +131,12 @@ export class Locacoes {
     this.http
       .get<DetalheLocacao>(`/api/v1/locacoes/${encodeURIComponent(id)}`)
       .pipe(
+        switchMap((detalhe) => {
+          if (!detalhe.itens.length) return of(detalhe);
+          return forkJoin(detalhe.itens.map((item) => this.identificarExemplar(item))).pipe(
+            map((itens) => ({ ...detalhe, itens })),
+          );
+        }),
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.lendoDetalhe.set(false)),
       )
@@ -139,6 +149,18 @@ export class Locacoes {
               : mensagemErro(error),
           ),
       });
+  }
+
+  private identificarExemplar(item: ItemLocacao) {
+    return this.catalogo.exemplar(item.exemplarId).pipe(
+      switchMap(({ codigo, livroId }) =>
+        this.catalogo.livro(livroId).pipe(
+          map(({ titulo }) => ({ ...item, codigo, titulo })),
+          catchError(() => of({ ...item, codigo })),
+        ),
+      ),
+      catchError(() => of(item)),
+    );
   }
 
   protected preparar(operacao: Operacao, item: ItemLocacao) {

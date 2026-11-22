@@ -41,6 +41,10 @@ export class CatalogoService {
     return this.http.get<Pagina<Exemplar>>('/api/v1/exemplares', { params: { page, size } });
   }
 
+  exemplar(id: string) {
+    return this.http.get<Exemplar>(`/api/v1/exemplares/${encodeURIComponent(id)}`);
+  }
+
   livro(id: string) {
     return this.http.get<Livro>(`/api/v1/livros/${encodeURIComponent(id)}`);
   }

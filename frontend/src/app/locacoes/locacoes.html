@@ -170,7 +170,12 @@
                   <tbody>
                     @for (item of dados.itens; track item.id) {
                       <tr>
-                        <th scope="row">{{ item.exemplarId }}</th>
+                        <th scope="row">
+                          {{ item.codigo ?? item.exemplarId }}
+                          @if (item.titulo) {
+                            <br /><span class="muted">{{ item.titulo }}</span>
+                          }
+                        </th>
                         <td>{{ item.dataPrevistaDevolucao | date: 'dd/MM/yyyy' }}</td>
                         <td>
                           {{
@@ -195,7 +200,9 @@
                               type="button"
                               class="edit-button"
                               [disabled]="salvando()"
-                              [attr.aria-label]="'Devolver exemplar ' + item.exemplarId"
+                              [attr.aria-label]="
+                                'Devolver exemplar ' + (item.codigo ?? item.exemplarId)
+                              "
                               (click)="preparar('devolucoes', item)"
                             >
                               Devolver
@@ -205,7 +212,9 @@
                               type="button"
                               class="edit-button"
                               [disabled]="salvando()"
-                              [attr.aria-label]="'Quitar exemplar ' + item.exemplarId"
+                              [attr.aria-label]="
+                                'Quitar exemplar ' + (item.codigo ?? item.exemplarId)
+                              "
                               (click)="preparar('pagamentos', item)"
                             >
                               Quitar
@@ -220,11 +229,14 @@
               @if (confirmacao(); as acao) {
                 <div class="panel-heading">
                   @if (acao.operacao === 'devolucoes') {
-                    <p>Registrar devolução do exemplar {{ acao.item.exemplarId }}?</p>
+                    <p>
+                      Registrar devolução do exemplar
+                      {{ acao.item.codigo ?? acao.item.exemplarId }}?
+                    </p>
                   } @else {
                     <p>
                       Confirmar recebimento de {{ moeda.format(acao.item.valorTotal ?? 0) }} pelo
-                      exemplar {{ acao.item.exemplarId }}?
+                      exemplar {{ acao.item.codigo ?? acao.item.exemplarId }}?
                     </p>
                   }
                   <div class="pagination">

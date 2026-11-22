@@ -48,8 +48,10 @@ Em 22/11/2026, o teste em Brave com viewport de 390 px, API e PostgreSQL locais 
 
 ## FRONT-003 — Consulta de locações
 
-A rota protegida /locacoes lista as locações abertas por padrão. O operador pode paginar e filtrar por situação, incluindo atrasos, pagamentos pendentes e histórico completo. Atraso e pagamento pendente podem aparecer ao mesmo tempo. A consulta de itens mostra o identificador de cada exemplar, a previsão de devolução e as datas registradas de devolução e pagamento. [Contrato de consultas](consultas-locacoes-api.md)
+A rota protegida /locacoes lista as locações abertas por padrão. O operador pode paginar e filtrar por situação, incluindo atrasos, pagamentos pendentes e histórico completo. Atraso e pagamento pendente podem aparecer ao mesmo tempo. A consulta de itens mostra o código da cópia, o título do livro, a previsão de devolução e as datas registradas de devolução e pagamento. [Contrato de consultas](consultas-locacoes-api.md)
 
 Em **Nova locação**, o operador escolhe um cliente e exemplares disponíveis em listas paginadas e informa a previsão de devolução de cada cópia. A API define a data de retirada e os preços e aplica as regras de disponibilidade e bloqueio. Em caso de conflito, a interface conserva a seleção e os prazos. [Contrato de abertura](locacoes-api.md)
 
 No detalhe, **Devolver** aparece para itens emprestados. A devolução apura o valor pela API e a cópia passa a oferecer **Quitar** enquanto houver pagamento pendente. A confirmação da quitação registra o recebimento do valor integral apurado. A página atualiza a lista e mantém o detalhe após cada operação, inclusive quando a locação deixa de atender ao filtro escolhido. [Devoluções](devolucoes-api.md) · [Quitação](pagamentos-api.md)
+
+A validação em Brave com API e PostgreSQL isolados confirmou a abertura de uma locação fictícia com dois exemplares, a indisponibilidade após a retirada, a liberação individual na devolução e o encerramento somente após a segunda quitação. A locação encerrada apareceu no filtro de histórico. A tela apresentou o código e o título das duas cópias durante o fluxo.

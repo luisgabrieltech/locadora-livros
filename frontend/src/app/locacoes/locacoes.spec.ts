@@ -57,9 +57,19 @@ describe('Consultas de locações', () => {
       valorTotal: null,
     };
     const detalhe = { id: locacao.id, encerrada: false, itens: [exemplar] };
+    const identificarExemplar = () => {
+      http.expectOne('/api/v1/exemplares/exemplar-a').flush({
+        id: exemplar.exemplarId,
+        livroId: 'livro-a',
+        codigo: 'EX-A',
+      });
+      http.expectOne('/api/v1/livros/livro-a').flush({ id: 'livro-a', titulo: 'Livro de teste' });
+    };
     http.expectOne('/api/v1/locacoes/locacao-a').flush(detalhe);
+    identificarExemplar();
     fixture.detectChanges();
-    expect(root.querySelector('.locacao-detalhe')?.textContent).toContain('exemplar-a');
+    expect(root.querySelector('.locacao-detalhe')?.textContent).toContain('EX-A');
+    expect(root.querySelector('.locacao-detalhe')?.textContent).toContain('Livro de teste');
     expect(root.querySelector('.locacao-detalhe')?.textContent).toContain('21/11/2026');
     const clicar = (rotulo: string) => {
       const botao = [...root.querySelectorAll('button')].find(
@@ -79,6 +89,7 @@ describe('Consultas de locações', () => {
     devolucao.flush({});
     const devolvido = { ...exemplar, dataDevolucao: '2026-11-22', valorTotal: 4.5 };
     http.expectOne('/api/v1/locacoes/locacao-a').flush({ ...detalhe, itens: [devolvido] });
+    identificarExemplar();
     http.expectOne('/api/v1/locacoes?page=0&size=10&situacao=ATRASADA').flush(vazia);
     fixture.detectChanges();
     expect(root.textContent).toContain('Nenhuma locação nesta situação.');
@@ -97,10 +108,11 @@ describe('Consultas de locações', () => {
       encerrada: true,
       itens: [{ ...devolvido, dataPagamento: '2026-11-22' }],
     });
+    identificarExemplar();
     http.expectOne('/api/v1/locacoes?page=0&size=10&situacao=ATRASADA').flush(vazia);
     fixture.detectChanges();
     expect(root.querySelector('.locacao-detalhe')?.textContent).toContain('Locação encerrada');
-    expect(root.querySelector('button[aria-label="Quitar exemplar exemplar-a"]')).toBeNull();
+    expect(root.querySelector('button[aria-label="Quitar exemplar EX-A"]')).toBeNull();
     http.verify();
   });
 });
