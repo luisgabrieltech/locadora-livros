@@ -1,16 +1,11 @@
 <div class="workspace">
   <app-sidebar />
   <div class="workspace-main">
-    <header class="topbar">
-      <span>Locadora <span class="breadcrumb-divider">/</span> <strong>Clientes</strong></span
-      ><span class="operator-badge"><span aria-hidden="true"></span>Acesso do operador</span>
-    </header>
     <main class="page-content" id="conteudo">
       <div class="page-heading">
         <div>
-          <span class="eyebrow">CADA LEITOR, UMA NOVA HISTÓRIA</span>
-          <h1>Clientes<span class="heading-dot">.</span></h1>
-          <p class="muted">Quem faz os livros circularem por aqui.</p>
+          <h1>Clientes</h1>
+          <p class="muted">Cadastre clientes e atualize seus dados de contato.</p>
         </div>
         <button class="button primary" (click)="novo()" [disabled]="carregando() || lendo()">
           <span class="plus" aria-hidden="true">+</span>Novo cliente
@@ -44,7 +39,7 @@
       >
         <div class="panel-heading">
           <div class="panel-title">
-            <h2 id="list-title">Sua comunidade de leitores</h2>
+            <h2 id="list-title">Clientes cadastrados</h2>
             <span class="count-badge">{{ dados().totalElements }}</span>
           </div>
           <button
@@ -60,9 +55,7 @@
           <p class="loading-line" role="status">Carregando os dados do cliente…</p>
         }
         @if (carregando()) {
-          <div class="loading-state" role="status">
-            <span class="spinner" aria-hidden="true"></span>Buscando clientes…
-          </div>
+          <div class="loading-state" role="status">Buscando clientes…</div>
         } @else if (dados().items.length) {
           <div class="table-scroll">
             <table>
@@ -71,9 +64,9 @@
               </caption>
               <thead>
                 <tr>
-                  <th scope="col">NOME</th>
-                  <th scope="col">TELEFONE</th>
-                  <th scope="col">E-MAIL</th>
+                  <th scope="col">Nome</th>
+                  <th scope="col">Telefone</th>
+                  <th scope="col">E-mail</th>
                   <th scope="col"><span class="sr-only">Ações</span></th>
                 </tr>
               </thead>
@@ -97,7 +90,7 @@
                         [disabled]="lendo()"
                         [attr.aria-label]="'Editar ' + cliente.nome"
                       >
-                        Editar<span aria-hidden="true"> ↗</span>
+                        Editar
                       </button>
                     </td>
                   </tr>
@@ -107,15 +100,7 @@
           </div>
         } @else if (!erroLista()) {
           <div class="empty-state">
-            <div class="empty-icon" aria-hidden="true">
-              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
-                <circle cx="24" cy="16" r="7" />
-                <path d="M10 40v-4a14 14 0 0 1 28 0v4M5 40h38" />
-              </svg>
-            </div>
-            <span class="eyebrow">O PRIMEIRO CAPÍTULO</span>
-            <h3>Seus leitores vão aparecer aqui.</h3>
-            <p>Cadastre o primeiro cliente e comece<br />a construir novas histórias.</p>
+            <h3>Nenhum cliente cadastrado.</h3>
             <button class="button secondary" (click)="novo()">Cadastrar primeiro cliente</button>
           </div>
         }
@@ -158,7 +143,6 @@
           </div>
         </footer>
       </section>
-      <p class="page-footnote">Um cadastro por pessoa. Muitas histórias pela frente.</p>
     </main>
   </div>
 </div>
@@ -166,7 +150,6 @@
   <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
     <div class="dialog-heading">
       <div>
-        <span class="eyebrow">COMUNIDADE DE LEITORES</span>
         <h2 id="form-title">{{ editando() ? 'Editar cliente' : 'Novo cliente' }}</h2>
       </div>
       <button
