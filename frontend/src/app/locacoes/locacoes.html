@@ -11,7 +11,7 @@
           <button
             type="button"
             class="button primary"
-            [disabled]="carregando() || lendoDetalhe()"
+            [disabled]="carregando() || lendoDetalhe() || salvando()"
             (click)="criando.set(true); sucesso.set('')"
           >
             Nova locação
@@ -38,7 +38,7 @@
                 #filtro
                 [value]="situacao()"
                 (change)="filtrar(filtro.value)"
-                [disabled]="carregando() || lendoDetalhe()"
+                [disabled]="carregando() || lendoDetalhe() || salvando()"
               >
                 <option value="">Todas</option>
                 <option value="ABERTA">Abertas</option>
@@ -90,7 +90,7 @@
                           <button
                             type="button"
                             class="edit-button"
-                            [disabled]="lendoDetalhe()"
+                            [disabled]="lendoDetalhe() || salvando()"
                             [attr.aria-label]="'Detalhes da locação ' + locacao.id"
                             (click)="abrir(locacao.id)"
                           >
@@ -112,7 +112,7 @@
                   type="button"
                   class="page-button"
                   aria-label="Página anterior"
-                  [disabled]="lendoDetalhe() || dados.page === 0"
+                  [disabled]="lendoDetalhe() || salvando() || dados.page === 0"
                   (click)="carregar(dados.page - 1)"
                 >
                   ‹
@@ -122,7 +122,7 @@
                   type="button"
                   class="page-button"
                   aria-label="Próxima página"
-                  [disabled]="lendoDetalhe() || dados.page + 1 >= dados.totalPages"
+                  [disabled]="lendoDetalhe() || salvando() || dados.page + 1 >= dados.totalPages"
                   (click)="carregar(dados.page + 1)"
                 >
                   ›
@@ -133,7 +133,12 @@
         </section>
         @if (selecionada(); as id) {
           <section class="customer-panel locacao-detalhe" aria-labelledby="locacao-detalhe">
-            <div class="panel-heading"><h2 id="locacao-detalhe">Exemplares da locação</h2></div>
+            <div class="panel-heading">
+              <h2 id="locacao-detalhe">Exemplares da locação</h2>
+              @if (detalhe()?.encerrada) {
+                <span>Locação encerrada</span>
+              }
+            </div>
             @if (lendoDetalhe()) {
               <p class="loading-state" role="status">Carregando itens…</p>
             } @else if (erroDetalhe()) {
@@ -158,6 +163,8 @@
                       <th scope="col">Previsão</th>
                       <th scope="col">Devolução</th>
                       <th scope="col">Pagamento</th>
+                      <th scope="col">Valor apurado</th>
+                      <th scope="col">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -179,11 +186,81 @@
                               : 'Pendente'
                           }}
                         </td>
+                        <td>
+                          {{ item.valorTotal != null ? moeda.format(item.valorTotal) : 'A apurar' }}
+                        </td>
+                        <td class="action-cell">
+                          @if (!item.dataDevolucao) {
+                            <button
+                              type="button"
+                              class="edit-button"
+                              [disabled]="salvando()"
+                              [attr.aria-label]="'Devolver exemplar ' + item.exemplarId"
+                              (click)="preparar('devolucoes', item)"
+                            >
+                              Devolver
+                            </button>
+                          } @else if (!item.dataPagamento && item.valorTotal != null) {
+                            <button
+                              type="button"
+                              class="edit-button"
+                              [disabled]="salvando()"
+                              [attr.aria-label]="'Quitar exemplar ' + item.exemplarId"
+                              (click)="preparar('pagamentos', item)"
+                            >
+                              Quitar
+                            </button>
+                          }
+                        </td>
                       </tr>
                     }
                   </tbody>
                 </table>
               </div>
+              @if (confirmacao(); as acao) {
+                <div class="panel-heading">
+                  @if (acao.operacao === 'devolucoes') {
+                    <p>Registrar devolução do exemplar {{ acao.item.exemplarId }}?</p>
+                  } @else {
+                    <p>
+                      Confirmar recebimento de {{ moeda.format(acao.item.valorTotal ?? 0) }} pelo
+                      exemplar {{ acao.item.exemplarId }}?
+                    </p>
+                  }
+                  <div class="pagination">
+                    <button
+                      type="button"
+                      class="button quiet"
+                      [disabled]="salvando()"
+                      (click)="confirmacao.set(null); erroOperacao.set('')"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      class="button primary"
+                      [disabled]="salvando() || carregando()"
+                      (click)="confirmar()"
+                    >
+                      {{
+                        salvando()
+                          ? 'Registrando…'
+                          : acao.operacao === 'devolucoes'
+                            ? 'Confirmar devolução'
+                            : 'Confirmar quitação'
+                      }}
+                    </button>
+                  </div>
+                </div>
+              }
+              @if (erroOperacao()) {
+                <div class="notice error" role="alert">
+                  {{ erroOperacao() }}
+                  <button type="button" class="text-button" (click)="abrir(id)">
+                    Atualizar itens
+                  </button>
+                </div>
+              }
             }
           </section>
         }

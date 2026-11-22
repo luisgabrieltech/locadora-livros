@@ -2,8 +2,8 @@ import { DatePipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
-import { mensagemErro } from '../core/api-error';
+import { finalize, of, switchMap } from 'rxjs';
+import { mensagemErro, ProblemaApi } from '../core/api-error';
 import { Sidebar } from '../sidebar';
 import { NovaLocacao } from './nova-locacao';
 
@@ -29,12 +29,16 @@ interface ItemLocacao {
   dataPrevistaDevolucao: string;
   dataDevolucao: string | null;
   dataPagamento: string | null;
+  valorTotal: number | null;
 }
 
 interface DetalheLocacao {
   id: string;
   itens: ItemLocacao[];
+  encerrada: boolean;
 }
+
+type Operacao = 'devolucoes' | 'pagamentos';
 
 @Component({
   selector: 'app-locacoes',
@@ -55,6 +59,10 @@ export class Locacoes {
   protected readonly selecionada = signal<string | null>(null);
   protected readonly lendoDetalhe = signal(false);
   protected readonly erroDetalhe = signal('');
+  protected readonly erroOperacao = signal('');
+  protected readonly confirmacao = signal<{ operacao: Operacao; item: ItemLocacao } | null>(null);
+  protected readonly salvando = signal(false);
+  protected readonly moeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
   private paginaSolicitada = 0;
 
   constructor() {
@@ -72,31 +80,46 @@ export class Locacoes {
     this.carregar(0);
   }
 
-  protected carregar(page = this.paginaSolicitada) {
-    if (this.carregando() || this.lendoDetalhe()) return;
+  protected carregar(page = this.paginaSolicitada, preservarDetalhe = false) {
+    if (this.carregando() || this.salvando()) return;
     this.paginaSolicitada = page;
-    this.selecionada.set(null);
-    this.detalhe.set(null);
-    this.erroDetalhe.set('');
+    if (!preservarDetalhe) {
+      this.selecionada.set(null);
+      this.detalhe.set(null);
+      this.erroDetalhe.set('');
+      this.erroOperacao.set('');
+      this.confirmacao.set(null);
+    }
     this.erro.set('');
     this.carregando.set(true);
     const situacao = this.situacao();
     const params: Record<string, string | number> = { page, size: 10 };
     if (situacao) params['situacao'] = situacao;
-    this.http
-      .get<PaginaLocacoes>('/api/v1/locacoes', { params })
+    const listar = (page: number) =>
+      this.http.get<PaginaLocacoes>('/api/v1/locacoes', { params: { ...params, page } });
+    listar(page)
       .pipe(
+        switchMap((pagina) => {
+          const ultima = Math.max(0, pagina.totalPages - 1);
+          if (page <= ultima) return of(pagina);
+          this.paginaSolicitada = ultima;
+          return listar(ultima);
+        }),
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.carregando.set(false)),
       )
       .subscribe({
-        next: (pagina) => this.pagina.set(pagina),
+        next: (pagina) => {
+          this.pagina.set(pagina);
+        },
         error: (error: unknown) => this.erro.set(mensagemErro(error)),
       });
   }
 
   protected abrir(id: string) {
-    if (this.lendoDetalhe()) return;
+    if (this.lendoDetalhe() || this.salvando()) return;
+    this.confirmacao.set(null);
+    this.erroOperacao.set('');
     this.selecionada.set(id);
     this.detalhe.set(null);
     this.erroDetalhe.set('');
@@ -115,6 +138,52 @@ export class Locacoes {
               ? 'Locação não encontrada. Atualize a lista.'
               : mensagemErro(error),
           ),
+      });
+  }
+
+  protected preparar(operacao: Operacao, item: ItemLocacao) {
+    this.sucesso.set('');
+    this.erroOperacao.set('');
+    this.confirmacao.set({ operacao, item });
+  }
+
+  protected confirmar() {
+    const id = this.selecionada();
+    const confirmacao = this.confirmacao();
+    if (!id || !confirmacao || this.salvando() || this.carregando()) return;
+
+    this.salvando.set(true);
+    this.erroOperacao.set('');
+    const { operacao, item } = confirmacao;
+    this.http
+      .post(`/api/v1/locacoes/${encodeURIComponent(id)}/${operacao}`, { itens: [item.id] })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.salvando.set(false)),
+      )
+      .subscribe({
+        next: () => {
+          this.salvando.set(false);
+          this.sucesso.set(
+            operacao === 'devolucoes' ? 'Devolução registrada.' : 'Quitação registrada.',
+          );
+          this.abrir(id);
+          this.carregar(this.paginaSolicitada, true);
+        },
+        error: (error: unknown) => {
+          if (error instanceof HttpErrorResponse && [400, 404, 409].includes(error.status)) {
+            const detalhe = (error.error as ProblemaApi | null)?.detail;
+            if (detalhe) {
+              this.erroOperacao.set(detalhe);
+              return;
+            }
+            if (error.status !== 400) {
+              this.erroOperacao.set('O item mudou ou não foi encontrado. Atualize os itens.');
+              return;
+            }
+          }
+          this.erroOperacao.set(mensagemErro(error));
+        },
       });
   }
 }

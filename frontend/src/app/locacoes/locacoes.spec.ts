@@ -6,7 +6,7 @@ import { AuthService } from '../core/auth.service';
 import { Locacoes } from './locacoes';
 
 describe('Consultas de locações', () => {
-  it('filtra na API, mostra as duas pendências e consulta os itens da locação', () => {
+  it('consulta, devolve e quita o item preservando o detalhe quando o filtro deixa de incluí-lo', () => {
     TestBed.configureTestingModule({
       imports: [Locacoes],
       providers: [
@@ -48,21 +48,59 @@ describe('Consultas de locações', () => {
     expect(root.querySelector('tbody')?.textContent).toContain('Pagamento pendente');
 
     root.querySelector<HTMLButtonElement>('tbody button')!.click();
-    http.expectOne('/api/v1/locacoes/locacao-a').flush({
-      id: locacao.id,
-      itens: [
-        {
-          id: 'item-a',
-          exemplarId: 'exemplar-a',
-          dataPrevistaDevolucao: '2026-11-21',
-          dataDevolucao: null,
-          dataPagamento: null,
-        },
-      ],
-    });
+    const exemplar = {
+      id: 'item-a',
+      exemplarId: 'exemplar-a',
+      dataPrevistaDevolucao: '2026-11-21',
+      dataDevolucao: null,
+      dataPagamento: null,
+      valorTotal: null,
+    };
+    const detalhe = { id: locacao.id, encerrada: false, itens: [exemplar] };
+    http.expectOne('/api/v1/locacoes/locacao-a').flush(detalhe);
     fixture.detectChanges();
     expect(root.querySelector('.locacao-detalhe')?.textContent).toContain('exemplar-a');
     expect(root.querySelector('.locacao-detalhe')?.textContent).toContain('21/11/2026');
+    const clicar = (rotulo: string) => {
+      const botao = [...root.querySelectorAll('button')].find(
+        (item) => item.textContent?.trim() === rotulo,
+      );
+      expect(botao).toBeDefined();
+      botao!.click();
+      fixture.detectChanges();
+    };
+    clicar('Devolver');
+    clicar('Confirmar devolução');
+    const devolucao = http.expectOne({
+      method: 'POST',
+      url: '/api/v1/locacoes/locacao-a/devolucoes',
+    });
+    expect(devolucao.request.body).toEqual({ itens: ['item-a'] });
+    devolucao.flush({});
+    const devolvido = { ...exemplar, dataDevolucao: '2026-11-22', valorTotal: 4.5 };
+    http.expectOne('/api/v1/locacoes/locacao-a').flush({ ...detalhe, itens: [devolvido] });
+    http.expectOne('/api/v1/locacoes?page=0&size=10&situacao=ATRASADA').flush(vazia);
+    fixture.detectChanges();
+    expect(root.textContent).toContain('Nenhuma locação nesta situação.');
+    expect(root.querySelector('.locacao-detalhe')?.textContent).toContain('4,50');
+
+    clicar('Quitar');
+    clicar('Confirmar quitação');
+    const pagamento = http.expectOne({
+      method: 'POST',
+      url: '/api/v1/locacoes/locacao-a/pagamentos',
+    });
+    expect(pagamento.request.body).toEqual({ itens: ['item-a'] });
+    pagamento.flush({});
+    http.expectOne('/api/v1/locacoes/locacao-a').flush({
+      ...detalhe,
+      encerrada: true,
+      itens: [{ ...devolvido, dataPagamento: '2026-11-22' }],
+    });
+    http.expectOne('/api/v1/locacoes?page=0&size=10&situacao=ATRASADA').flush(vazia);
+    fixture.detectChanges();
+    expect(root.querySelector('.locacao-detalhe')?.textContent).toContain('Locação encerrada');
+    expect(root.querySelector('button[aria-label="Quitar exemplar exemplar-a"]')).toBeNull();
     http.verify();
   });
 });
