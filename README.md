@@ -1,12 +1,26 @@
-# Locadora de livros — API
+# Locadora de livros — Java e Angular
 
-Projeto de portfólio com Java 22 e Spring Boot, executado localmente. O objetivo é desenvolver uma API de locação de livros com regras verificáveis, entregas incrementais e histórico técnico compreensível.
+Projeto de portfólio com API Java 22/Spring Boot e interface Angular, executado localmente. Desenvolvimento com regras verificáveis, entregas incrementais e histórico técnico compreensível.
 
 ## Estado atual
 
 Implementados e validados: clientes, livros, exemplares, abertura/consulta de locações, devoluções parciais e quitação por item, com autenticação HTTP Basic, CSRF, migrações e PostgreSQL local. A última execução de Maven verify nesta sessão aprovou 113 testes em 16/11/2026, sem falhas, erros ou ignorados.
 
 O responsável pode registrar a quitação integral de um ou mais itens devolvidos, inclusive imediatamente após a devolução, sem integração bancária. A devolução encerra a cobrança do item e libera a cópia; o valor fica pendente até a quitação. Todos os exemplares devolvidos não significam locação financeiramente quitada. Consulte [requisitos](docs/requirements.md), [arquitetura](docs/architecture.md) e [roadmap](docs/roadmap.md).
+
+## Interface Angular — primeira entrega
+
+Login do operador e tela de Clientes com listagem paginada, cadastro e edição. Catálogo, locações, devolução e pagamento continuam pela API até as próximas entregas de telas.
+
+Com a API em execução na porta 8080, abra outro PowerShell na raiz:
+
+```powershell
+cd frontend
+npm.cmd ci
+npm.cmd start
+```
+
+Abra http://127.0.0.1:4200 e entre com APP_USERNAME e APP_PASSWORD do .env do backend. Requer Node 24.19.0 e npm; não copie senhas para arquivos do frontend. Recarregar a página exige novo login, pois as credenciais ficam apenas em memória. No Linux/macOS, use npm. Execução, testes e limites em [frontend/README.md](frontend/README.md) e [docs/frontend.md](docs/frontend.md).
 
 ## API de clientes
 

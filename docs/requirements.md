@@ -1,6 +1,6 @@
 # Requisitos — Locadora de livros
 
-Estado: recorte funcional do MVP aprovado. Primeira entrega pela API backend, sem telas. Arquitetura e stack aprovadas; execução exclusivamente local para portfólio no GitHub. Autenticação HTTP Basic local e fuso America/Sao_Paulo aprovados; requisitos não funcionais adicionais serão detalhados conforme a entrega.
+Estado: recorte funcional do MVP aprovado. MVP backend entregue pela API; evolução Angular aprovada em FRONT-001, inicialmente login e Clientes. Arquitetura e stack aprovadas; execução exclusivamente local para portfólio no GitHub. Autenticação HTTP Basic local e fuso America/Sao_Paulo aprovados; requisitos não funcionais adicionais serão detalhados conforme a entrega.
 
 ## Contexto confirmado
 - Aplicação com Java + Spring Boot para uma locadora de livros físicos.
@@ -54,7 +54,7 @@ Estado: recorte funcional do MVP aprovado. Primeira entrega pela API backend, se
 ## Questões abertas
 - Definir tratamento de cancelamento e correção de registros antes de implementá-los; não há autorização para apagar histórico de locações ou pagamentos.
 - Detalhar contratos da API e requisitos não funcionais das próximas funcionalidades. Autenticação, execução local e fuso estão aprovados no ADR-003.
-- Definir o contrato da próxima entrega PAG-001, preservando a quitação integral por exemplar e o bloqueio até regularização.
+- Quitação por exemplar implementada em PAG-001; preservar seu contrato nas futuras telas de pagamento.
 
 ## Critérios de aceitação — devolução e pendência financeira
 - Dada uma locação com três exemplares, ao devolver apenas um, liberar esse exemplar e manter os outros dois emprestados, com suas cobranças em andamento.
@@ -89,7 +89,7 @@ Estado: recorte funcional do MVP aprovado. Primeira entrega pela API backend, se
 - Permitir atualizar o próprio cliente sem considerar seu CPF atual uma duplicidade.
 
 ## Fora do MVP — evolução futura
-- Interface com telas para o operador; a primeira entrega será pela API.
+- Telas de Catálogo/Locações após FRONT-001; a primeira entrega Angular abrange login e Clientes.
 - Reservas de exemplares.
 - Renovação ou alteração do prazo de locações em andamento.
 - Tratamento de perda ou dano de exemplares. A operação inicial cobre devoluções normais; esses casos excepcionais ainda não terão fluxo no sistema.
@@ -98,3 +98,6 @@ Estado: recorte funcional do MVP aprovado. Primeira entrega pela API backend, se
 - Ao abrir uma locação, registrar a diária e a multa vigentes para seus exemplares.
 - Se a tabela mudar depois, calcular a devolução de uma locação existente com os preços registrados na abertura.
 - Aplicar os novos preços somente às locações abertas após a alteração.
+
+## Evolução aprovada — interface Angular
+Em 16/11/2026, o usuário aprovou FRONT-001: estrutura Angular no mesmo repositório, autenticação do operador e listagem/cadastro/edição de Clientes. Preservar os contratos e a segurança da API. Catálogo e Locações em entregas posteriores; requisitos e critérios em [frontend.md](frontend.md) e ADR-009. Helper de PowerShell e colinhas manuais permanecem locais, sem publicação, conforme solicitação do usuário.

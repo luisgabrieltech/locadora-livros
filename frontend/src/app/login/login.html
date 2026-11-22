@@ -1,0 +1,74 @@
+<main class="login-layout">
+  <section class="login-story" aria-label="Locadora de livros">
+    <a class="brand brand-light" href="/entrar"
+      ><span class="brand-mark" aria-hidden="true">L.</span
+      ><span>Locadora<span class="brand-sub">DE LIVROS</span></span></a
+    >
+    <div class="story-content">
+      <span class="eyebrow light">BOAS HISTÓRIAS, BEM CUIDADAS</span>
+      <h1>Um lugar para<br />cada história.</h1>
+      <p>
+        Seu acervo, seus leitores e as próximas páginas.<br />Organize o dia a dia da sua locadora.
+      </p>
+      <div class="book-scene" aria-hidden="true">
+        <div class="book book-one"><span>HISTÓRIAS</span></div>
+        <div class="book book-two"><span>ENTRE PÁGINAS</span></div>
+        <div class="book book-three"><span>NOVOS CAPÍTULOS</span></div>
+        <div class="book-shelf"></div>
+      </div>
+    </div>
+    <span class="story-footer">Livros circulam. Histórias ficam.</span>
+  </section>
+  <section class="login-panel" aria-labelledby="login-title">
+    <div class="login-card">
+      <span class="eyebrow">ACESSO DO OPERADOR</span>
+      <h2 id="login-title">Bom ter você por aqui.</h2>
+      <p class="muted">Entre para cuidar da sua locadora.</p>
+      @if (auth.aviso()) {
+        <p class="notice info" role="status">{{ auth.aviso() }}</p>
+      }
+      @if (erro()) {
+        <p class="notice error" role="alert">{{ erro() }}</p>
+      }
+      <form [formGroup]="form" (ngSubmit)="entrar()" novalidate>
+        <div class="field">
+          <label for="usuario">Usuário</label
+          ><input
+            id="usuario"
+            formControlName="usuario"
+            autocomplete="username"
+            autofocus
+            [readonly]="enviando()"
+            [attr.aria-invalid]="form.controls.usuario.touched && form.controls.usuario.invalid"
+            aria-describedby="usuario-error"
+            placeholder="Seu usuário"
+          />
+          @if (form.controls.usuario.touched && form.controls.usuario.invalid) {
+            <small id="usuario-error" class="field-error">Informe seu usuário.</small>
+          }
+        </div>
+        <div class="field">
+          <label for="senha">Senha</label
+          ><input
+            id="senha"
+            type="password"
+            formControlName="senha"
+            autocomplete="current-password"
+            [readonly]="enviando()"
+            [attr.aria-invalid]="form.controls.senha.touched && form.controls.senha.invalid"
+            aria-describedby="senha-error"
+            placeholder="Sua senha"
+          />
+          @if (form.controls.senha.touched && form.controls.senha.invalid) {
+            <small id="senha-error" class="field-error">Informe sua senha.</small>
+          }
+        </div>
+        <button class="button primary full" type="submit" [disabled]="enviando()">
+          {{ enviando() ? 'Entrando…' : 'Entrar na locadora' }}<span aria-hidden="true">→</span>
+        </button>
+      </form>
+      <p class="login-note">Acesso exclusivo ao responsável pela locadora.</p>
+    </div>
+    <span class="login-bottom">LOCAÇÕES SIMPLES. LEITURAS SEM FIM.</span>
+  </section>
+</main>

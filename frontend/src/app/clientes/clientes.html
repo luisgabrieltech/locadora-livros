@@ -1,0 +1,313 @@
+<div class="workspace">
+  <aside class="sidebar">
+    <a class="brand" routerLink="/clientes"
+      ><span class="brand-mark" aria-hidden="true">L.</span
+      ><span>Locadora<span class="brand-sub">DE LIVROS</span></span></a
+    >
+    <span class="nav-label">SEU ESPAÇO</span>
+    <nav aria-label="Navegação principal">
+      <a class="nav-link active" routerLink="/clientes" aria-current="page"
+        ><svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          aria-hidden="true"
+        >
+          <circle cx="9" cy="8" r="3" />
+          <path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6m2 3a5 5 0 0 1 3 4v3" /></svg
+        >Clientes<span class="nav-dot" aria-hidden="true"></span
+      ></a>
+    </nav>
+    <div class="sidebar-note">
+      <span class="note-line" aria-hidden="true"></span>
+      <p>Boas leituras começam<br />com boas conexões.</p>
+      <span>PAINEL DA LOCADORA</span>
+    </div>
+    <div class="operator">
+      <div class="operator-avatar" aria-hidden="true">
+        {{ auth.usuario().slice(0, 1).toUpperCase() }}
+      </div>
+      <div>
+        <strong>{{ auth.usuario() }}</strong><span>Operador</span>
+      </div>
+      <button
+        type="button"
+        class="exit-button"
+        (click)="auth.sair()"
+        aria-label="Sair da locadora"
+        title="Sair"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          aria-hidden="true"
+        >
+          <path d="M9 5H4v14h5m5-14 7 7-7 7m-5-7h12" />
+        </svg>
+      </button>
+    </div>
+  </aside>
+  <div class="workspace-main">
+    <header class="topbar">
+      <span>Locadora <span class="breadcrumb-divider">/</span> <strong>Clientes</strong></span
+      ><span class="operator-badge"><span aria-hidden="true"></span>Acesso do operador</span>
+    </header>
+    <main class="page-content" id="conteudo">
+      <div class="page-heading">
+        <div>
+          <span class="eyebrow">CADA LEITOR, UMA NOVA HISTÓRIA</span>
+          <h1>Clientes<span class="heading-dot">.</span></h1>
+          <p class="muted">Quem faz os livros circularem por aqui.</p>
+        </div>
+        <button class="button primary" (click)="novo()" [disabled]="carregando() || lendo()">
+          <span class="plus" aria-hidden="true">+</span>Novo cliente
+        </button>
+      </div>
+      @if (sucesso()) {
+        <div class="notice success" role="status">
+          {{ sucesso()
+          }}<button
+            type="button"
+            class="notice-close"
+            (click)="sucesso.set('')"
+            aria-label="Fechar mensagem"
+          >
+            ×
+          </button>
+        </div>
+      }
+      @if (erroLista()) {
+        <div class="notice error" role="alert">
+          {{ erroLista()
+          }}<button class="text-button" (click)="carregar()" [disabled]="carregando()">
+            Tentar novamente
+          </button>
+        </div>
+      }
+      <section
+        class="customer-panel"
+        aria-labelledby="list-title"
+        [attr.aria-busy]="carregando() || lendo()"
+      >
+        <div class="panel-heading">
+          <div class="panel-title">
+            <h2 id="list-title">Sua comunidade de leitores</h2>
+            <span class="count-badge">{{ dados().totalElements }}</span>
+          </div>
+          <button
+            type="button"
+            class="text-button refresh"
+            (click)="carregar()"
+            [disabled]="carregando()"
+          >
+            {{ carregando() ? 'Carregando…' : 'Atualizar lista' }}
+          </button>
+        </div>
+        @if (lendo()) {
+          <p class="loading-line" role="status">Carregando os dados do cliente…</p>
+        }
+        @if (carregando()) {
+          <div class="loading-state" role="status">
+            <span class="spinner" aria-hidden="true"></span>Buscando clientes…
+          </div>
+        } @else if (dados().items.length) {
+          <div class="table-scroll">
+            <table>
+              <caption class="sr-only">
+                Clientes cadastrados e seus contatos
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">NOME</th>
+                  <th scope="col">TELEFONE</th>
+                  <th scope="col">E-MAIL</th>
+                  <th scope="col"><span class="sr-only">Ações</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (cliente of dados().items; track cliente.id) {
+                  <tr>
+                    <th scope="row">
+                      <div class="customer-name">
+                        <span class="customer-avatar" aria-hidden="true">{{
+                          iniciais(cliente.nome)
+                        }}</span><span>{{ cliente.nome }}</span>
+                      </div>
+                    </th>
+                    <td>{{ cliente.telefone }}</td>
+                    <td [class.muted]="!cliente.email">{{ cliente.email || 'Não informado' }}</td>
+                    <td class="action-cell">
+                      <button
+                        type="button"
+                        class="edit-button"
+                        (click)="editar(cliente.id)"
+                        [disabled]="lendo()"
+                        [attr.aria-label]="'Editar ' + cliente.nome"
+                      >
+                        Editar<span aria-hidden="true"> ↗</span>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else if (!erroLista()) {
+          <div class="empty-state">
+            <div class="empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="24" cy="16" r="7" />
+                <path d="M10 40v-4a14 14 0 0 1 28 0v4M5 40h38" />
+              </svg>
+            </div>
+            <span class="eyebrow">O PRIMEIRO CAPÍTULO</span>
+            <h3>Seus leitores vão aparecer aqui.</h3>
+            <p>Cadastre o primeiro cliente e comece<br />a construir novas histórias.</p>
+            <button class="button secondary" (click)="novo()">Cadastrar primeiro cliente</button>
+          </div>
+        }
+        <footer class="panel-footer">
+          <span
+            >{{ dados().totalElements }}
+            {{ dados().totalElements === 1 ? 'cliente cadastrado' : 'clientes cadastrados' }}</span
+          >
+          <div class="pagination">
+            <label for="tamanho">Por página</label
+            ><select
+              id="tamanho"
+              #seletor
+              [value]="tamanho()"
+              (change)="mudarTamanho(seletor.value)"
+              [disabled]="carregando()"
+            >
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option></select
+            ><span class="page-counter"
+              >{{ dados().totalPages ? dados().page + 1 : 0 }} de {{ dados().totalPages }}</span
+            ><button
+              type="button"
+              class="page-button"
+              (click)="carregar(dados().page - 1)"
+              [disabled]="carregando() || dados().page === 0"
+              aria-label="Página anterior"
+            >
+              ‹</button
+            ><button
+              type="button"
+              class="page-button"
+              (click)="carregar(dados().page + 1)"
+              [disabled]="carregando() || dados().page + 1 >= dados().totalPages"
+              aria-label="Próxima página"
+            >
+              ›
+            </button>
+          </div>
+        </footer>
+      </section>
+      <p class="page-footnote">Um cadastro por pessoa. Muitas histórias pela frente.</p>
+    </main>
+  </div>
+</div>
+<dialog #dialogo class="customer-dialog" aria-labelledby="form-title" (cancel)="fechar($event)">
+  <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+    <div class="dialog-heading">
+      <div>
+        <span class="eyebrow">COMUNIDADE DE LEITORES</span>
+        <h2 id="form-title">{{ editando() ? 'Editar cliente' : 'Novo cliente' }}</h2>
+      </div>
+      <button
+        type="button"
+        class="dialog-close"
+        (click)="fechar()"
+        [disabled]="salvando()"
+        aria-label="Fechar formulário"
+      >
+        ×
+      </button>
+    </div>
+    <p class="muted dialog-intro">
+      Os campos com <span aria-hidden="true">*</span> são obrigatórios.
+    </p>
+    @if (erroForm()) {
+      <p class="notice error" role="alert">{{ erroForm() }}</p>
+    }
+    <div class="field">
+      <label for="nome">Nome completo <span aria-hidden="true">*</span></label
+      ><input
+        id="nome"
+        formControlName="nome"
+        autocomplete="name"
+        maxlength="150"
+        autofocus
+        [readonly]="salvando()"
+        [attr.aria-invalid]="!!erroCampo('nome')"
+        aria-describedby="nome-error"
+      />
+      @if (erroCampo('nome')) {
+        <small id="nome-error" class="field-error">{{ erroCampo('nome') }}</small>
+      }
+    </div>
+    <div class="field">
+      <label for="telefone">Telefone com DDD <span aria-hidden="true">*</span></label
+      ><input
+        id="telefone"
+        formControlName="telefone"
+        type="tel"
+        autocomplete="tel"
+        maxlength="30"
+        placeholder="(11) 99999-0000"
+        [readonly]="salvando()"
+        [attr.aria-invalid]="!!erroCampo('telefone')"
+        aria-describedby="telefone-error"
+      />
+      @if (erroCampo('telefone')) {
+        <small id="telefone-error" class="field-error">{{ erroCampo('telefone') }}</small>
+      }
+    </div>
+    <div class="field">
+      <label for="cpf">CPF <span aria-hidden="true">*</span></label
+      ><input
+        id="cpf"
+        formControlName="cpf"
+        inputmode="numeric"
+        autocomplete="off"
+        maxlength="14"
+        placeholder="000.000.000-00"
+        [readonly]="salvando()"
+        [attr.aria-invalid]="!!erroCampo('cpf')"
+        aria-describedby="cpf-error"
+      />
+      @if (erroCampo('cpf')) {
+        <small id="cpf-error" class="field-error">{{ erroCampo('cpf') }}</small>
+      }
+    </div>
+    <div class="field">
+      <label for="email">E-mail <span class="optional">opcional</span></label
+      ><input
+        id="email"
+        formControlName="email"
+        type="email"
+        autocomplete="email"
+        maxlength="254"
+        placeholder="nome@exemplo.com"
+        [readonly]="salvando()"
+        [attr.aria-invalid]="!!erroCampo('email')"
+        aria-describedby="email-error"
+      />
+      @if (erroCampo('email')) {
+        <small id="email-error" class="field-error">{{ erroCampo('email') }}</small>
+      }
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="button quiet" (click)="fechar()" [disabled]="salvando()">
+        Cancelar</button
+      ><button type="submit" class="button primary" [disabled]="salvando()">
+        {{ salvando() ? 'Salvando…' : 'Salvar cliente' }}
+      </button>
+    </div>
+  </form>
+</dialog>
