@@ -1,0 +1,349 @@
+<div class="workspace">
+  <app-sidebar />
+  <div class="workspace-main">
+    <header class="topbar">
+      <span>Locadora <span class="breadcrumb-divider">/</span> <strong>Catálogo</strong></span>
+    </header>
+    <main class="page-content" id="conteudo">
+      <div class="page-heading">
+        <div>
+          <h1>Catálogo<span class="heading-dot">.</span></h1>
+          <p class="muted">Gerencie os títulos e acompanhe a disponibilidade das cópias.</p>
+        </div>
+        <button type="button" class="button primary" (click)="abrir()" [disabled]="carregando()">
+          {{ secao() === 'livros' ? 'Novo livro' : 'Novo exemplar' }}
+        </button>
+      </div>
+
+      <div class="catalogo-acoes" role="group" aria-label="Seções do catálogo">
+        <button
+          type="button"
+          class="button secondary"
+          [attr.aria-pressed]="secao() === 'livros'"
+          [disabled]="carregando()"
+          (click)="mudarSecao('livros')"
+        >
+          Livros
+        </button>
+        <button
+          type="button"
+          class="button secondary"
+          [attr.aria-pressed]="secao() === 'exemplares'"
+          [disabled]="carregando()"
+          (click)="mudarSecao('exemplares')"
+        >
+          Exemplares
+        </button>
+      </div>
+
+      @if (sucesso()) {
+        <p class="notice success" role="status">{{ sucesso() }}</p>
+      }
+      @if (erroLista()) {
+        <div class="notice error" role="alert">
+          {{ erroLista() }}
+          <button type="button" class="text-button" (click)="carregar()">Tentar novamente</button>
+        </div>
+      }
+
+      <section
+        class="customer-panel"
+        aria-labelledby="lista-catalogo"
+        [attr.aria-busy]="carregando()"
+      >
+        <div class="panel-heading">
+          <h2 id="lista-catalogo">{{ secao() === 'livros' ? 'Livros' : 'Exemplares' }}</h2>
+          <button
+            type="button"
+            class="text-button refresh"
+            (click)="carregar()"
+            [disabled]="carregando()"
+          >
+            Atualizar lista
+          </button>
+        </div>
+        @if (carregando()) {
+          <p class="loading-state" role="status">Carregando catálogo…</p>
+        } @else if (!erroLista()) {
+          @if (lista(); as resultado) {
+            @if (!resultado.pagina.items.length) {
+              <p class="empty-state">Nenhum registro nesta página.</p>
+            } @else if (resultado.secao === 'livros') {
+              <div class="table-scroll">
+                <table>
+                  <caption class="sr-only">
+                    Livros cadastrados
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Título</th>
+                      <th scope="col">Autor</th>
+                      <th scope="col">ISBN</th>
+                      <th scope="col"><span class="sr-only">Ações</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (livro of resultado.pagina.items; track livro.id) {
+                      <tr>
+                        <th scope="row">{{ livro.titulo }}</th>
+                        <td>{{ livro.autor }}</td>
+                        <td>{{ livro.isbn || 'Não informado' }}</td>
+                        <td class="action-cell">
+                          <button
+                            type="button"
+                            class="edit-button"
+                            (click)="abrir(livro)"
+                            [attr.aria-label]="'Editar livro ' + livro.titulo"
+                          >
+                            Editar
+                          </button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            } @else {
+              <div class="table-scroll">
+                <table>
+                  <caption class="sr-only">
+                    Exemplares cadastrados e sua disponibilidade
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Código</th>
+                      <th scope="col">Livro</th>
+                      <th scope="col">Disponibilidade</th>
+                      <th scope="col"><span class="sr-only">Ações</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (exemplar of resultado.pagina.items; track exemplar.id) {
+                      <tr>
+                        <th scope="row">{{ exemplar.codigo }}</th>
+                        <td>{{ exemplar.tituloLivro }}</td>
+                        <td>{{ exemplar.disponivel ? 'Disponível' : 'Indisponível' }}</td>
+                        <td class="action-cell">
+                          <button
+                            type="button"
+                            class="edit-button"
+                            (click)="abrir(exemplar)"
+                            [attr.aria-label]="'Editar exemplar ' + exemplar.codigo"
+                          >
+                            Editar
+                          </button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
+        }
+        <footer class="panel-footer">
+          <span>{{ lista()?.pagina?.totalElements ?? 0 }} registros</span>
+          <div class="pagination">
+            <label for="tamanho-catalogo">Por página</label>
+            <select
+              id="tamanho-catalogo"
+              #seletor
+              [value]="tamanho()"
+              (change)="mudarTamanho(seletor.value)"
+              [disabled]="carregando()"
+            >
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+            @if (lista()?.pagina; as pagina) {
+              <span class="page-counter"
+                >{{ pagina.totalPages ? pagina.page + 1 : 0 }} de {{ pagina.totalPages }}</span
+              >
+              <button
+                type="button"
+                class="page-button"
+                (click)="carregar(pagina.page - 1)"
+                [disabled]="carregando() || !!erroLista() || pagina.page === 0"
+                aria-label="Página anterior"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                class="page-button"
+                (click)="carregar(pagina.page + 1)"
+                [disabled]="carregando() || !!erroLista() || pagina.page + 1 >= pagina.totalPages"
+                aria-label="Próxima página"
+              >
+                ›
+              </button>
+            }
+          </div>
+        </footer>
+      </section>
+    </main>
+  </div>
+</div>
+
+<dialog
+  #dialogo
+  class="customer-dialog"
+  aria-labelledby="catalogo-form-title"
+  (cancel)="fechar($event)"
+>
+  <form (submit)="$event.preventDefault(); salvar()" novalidate>
+    <div class="dialog-heading">
+      <h2 id="catalogo-form-title">
+        {{ editando() ? 'Editar' : 'Cadastrar' }} {{ secao() === 'livros' ? 'livro' : 'exemplar' }}
+      </h2>
+    </div>
+    @if (erroForm()) {
+      <p class="notice error" role="alert">{{ erroForm() }}</p>
+    }
+    @if (secao() === 'livros') {
+      <div [formGroup]="formLivro" (input)="limparErros()">
+        <div class="field">
+          <label for="titulo">Título</label>
+          <input
+            id="titulo"
+            formControlName="titulo"
+            required
+            [readonly]="salvando()"
+            [attr.aria-invalid]="!!errosCampos()['titulo']"
+            [attr.aria-describedby]="errosCampos()['titulo'] ? 'titulo-erro' : null"
+          />
+          @if (errosCampos()['titulo']; as erro) {
+            <small id="titulo-erro" class="field-error">{{ erro }}</small>
+          }
+        </div>
+        <div class="field">
+          <label for="autor">Autor</label>
+          <input
+            id="autor"
+            formControlName="autor"
+            required
+            [readonly]="salvando()"
+            [attr.aria-invalid]="!!errosCampos()['autor']"
+            [attr.aria-describedby]="errosCampos()['autor'] ? 'autor-erro' : null"
+          />
+          @if (errosCampos()['autor']; as erro) {
+            <small id="autor-erro" class="field-error">{{ erro }}</small>
+          }
+        </div>
+        <div class="field">
+          <label for="isbn">ISBN <span class="optional">opcional</span></label>
+          <input
+            id="isbn"
+            formControlName="isbn"
+            [readonly]="salvando()"
+            [attr.aria-invalid]="!!errosCampos()['isbn']"
+            [attr.aria-describedby]="errosCampos()['isbn'] ? 'isbn-erro' : null"
+          />
+          @if (errosCampos()['isbn']; as erro) {
+            <small id="isbn-erro" class="field-error">{{ erro }}</small>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="field" [formGroup]="formExemplar" (input)="limparErros()">
+        <label for="codigo">Código</label>
+        <input
+          id="codigo"
+          formControlName="codigo"
+          required
+          [readonly]="salvando()"
+          [attr.aria-invalid]="!!errosCampos()['codigo']"
+          [attr.aria-describedby]="errosCampos()['codigo'] ? 'codigo-erro' : null"
+        />
+        @if (errosCampos()['codigo']; as erro) {
+          <small id="codigo-erro" class="field-error">{{ erro }}</small>
+        }
+      </div>
+      <div class="field">
+        <span
+          ><strong>Livro</strong>
+          {{ livroSelecionado()?.titulo ?? 'Nenhum livro selecionado' }}</span
+        >
+        <button
+          id="escolher-livro"
+          type="button"
+          class="button secondary"
+          (click)="alternarLivros()"
+          [disabled]="salvando() || carregandoLivros()"
+          [attr.aria-expanded]="escolhendoLivro()"
+        >
+          {{ escolhendoLivro() ? 'Ocultar livros' : 'Escolher livro' }}
+        </button>
+        @if (errosCampos()['livroId']; as erro) {
+          <small class="field-error">{{ erro }}</small>
+        }
+      </div>
+      @if (escolhendoLivro()) {
+        @if (carregandoLivros()) {
+          <p role="status">Carregando livros…</p>
+        } @else if (erroLivros()) {
+          <p class="notice error" role="alert">{{ erroLivros() }}</p>
+          <button type="button" class="text-button" (click)="carregarLivros(paginaLivros())">
+            Tentar novamente
+          </button>
+        } @else if (opcoes(); as pagina) {
+          @if (pagina.items.length) {
+            <ul class="catalogo-livros">
+              @for (livro of pagina.items; track livro.id) {
+                <li>
+                  <button
+                    type="button"
+                    class="button secondary"
+                    (click)="selecionarLivro(livro)"
+                    [disabled]="salvando()"
+                  >
+                    {{ livro.titulo }} · {{ livro.autor }}{{ livro.isbn ? ' · ' + livro.isbn : '' }}
+                  </button>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p>Cadastre um livro na seção Livros para vinculá-lo ao exemplar.</p>
+          }
+          <div class="pagination">
+            <button
+              type="button"
+              class="page-button"
+              (click)="carregarLivros(pagina.page - 1)"
+              [disabled]="salvando() || pagina.page === 0"
+              aria-label="Página anterior de livros"
+            >
+              ‹
+            </button>
+            <span class="page-counter"
+              >{{ pagina.totalPages ? pagina.page + 1 : 0 }} de {{ pagina.totalPages }}</span
+            >
+            <button
+              type="button"
+              class="page-button"
+              (click)="carregarLivros(pagina.page + 1)"
+              [disabled]="salvando() || pagina.page + 1 >= pagina.totalPages"
+              aria-label="Próxima página de livros"
+            >
+              ›
+            </button>
+          </div>
+        }
+      }
+    }
+    <div class="dialog-footer">
+      <button
+        type="button"
+        class="button quiet"
+        (click)="fechar()"
+        [disabled]="salvando() || carregandoLivros()"
+      >
+        Cancelar
+      </button>
+      <button type="submit" class="button primary" [disabled]="salvando() || carregandoLivros()">
+        {{ salvando() ? 'Salvando…' : 'Salvar' }}
+      </button>
+    </div>
+  </form>
+</dialog>

@@ -34,6 +34,14 @@ Estado: implementação validada localmente e preparada para PR; conferir a CI d
 
 ## Próximas entregas
 
-- FRONT-002: livros, exemplares e disponibilidade.
+- FRONT-002: catálogo implementado. Veja a validação abaixo.
 - FRONT-003: abertura/detalhe de locações, devolução e quitação por item.
 - Consolidar validação do fluxo completo quando essas telas existirem. Não declarar o frontend completo antes disso.
+
+## FRONT-002 — Catálogo
+
+A rota protegida /catalogo dá acesso às seções Livros e Exemplares. Ambas consultam páginas da API e permitem cadastro e edição. Para vincular um exemplar, o operador escolhe um título em uma lista paginada. A lista de exemplares mostra o título associado e a disponibilidade retornada pela API. A interface conserva os dados do formulário quando a API rejeita ISBN, código ou alteração de vínculo. O [contrato do catálogo](catalogo-api.md) descreve essas regras.
+
+Em 22/11/2026, `npm run format:check`, `npm test` e `npm run build` passaram com o Node 26.13.1 instalado localmente. A suíte aprovou 23 testes, quatro deles do catálogo. Os testes novos cobrem remoção e rejeição de ISBN, seleção de livro em outra página, exibição de disponibilidade e conflitos por código duplicado ou histórico de locação. A versão configurada para o projeto permanece a indicada no [README do frontend](../frontend/README.md).
+
+A validação no navegador com a API e o PostgreSQL permanece pendente.

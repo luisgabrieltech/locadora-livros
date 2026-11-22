@@ -871,8 +871,9 @@ tbody tr:hover {
     width: 100%;
     height: auto;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 20px;
+    gap: 8px 20px;
     border-right: 0;
     border-bottom: 1px solid var(--line);
     padding: 14px 20px;
@@ -892,9 +893,14 @@ tbody tr:hover {
     font-size: 27px;
   }
   .nav-label,
-  .sidebar-note,
-  .sidebar nav {
+  .sidebar-note {
     display: none;
+  }
+  .sidebar nav {
+    order: 1;
+    flex-basis: 100%;
+    display: flex;
+    flex-wrap: wrap;
   }
   .operator {
     margin-left: auto;

@@ -1,6 +1,6 @@
 # Interface da locadora
 
-FRONT-001: Angular 22, login do operador e clientes (listagem paginada, cadastro e edição). Catálogo e locações continuam disponíveis somente pela API nesta entrega.
+Operadores podem listar, cadastrar e editar clientes, livros e exemplares. O catálogo mostra a disponibilidade de cada exemplar. As operações de locação estão disponíveis pela API.
 
 ## Rodar
 

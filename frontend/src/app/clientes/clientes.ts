@@ -2,9 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-import { AuthService } from '../core/auth.service';
+import { Sidebar } from '../sidebar';
 import { mensagemErro, ProblemaApi } from '../core/api-error';
 import { ClientesService, PaginaClientes } from './clientes.service';
 
@@ -12,11 +11,10 @@ type Campo = 'nome' | 'telefone' | 'cpf' | 'email';
 
 @Component({
   selector: 'app-clientes',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, Sidebar],
   templateUrl: './clientes.html',
 })
 export class Clientes {
-  protected readonly auth = inject(AuthService);
   private readonly api = inject(ClientesService);
   private readonly destroyRef = inject(DestroyRef);
   @ViewChild('dialogo', { static: true }) private dialogo!: ElementRef<HTMLDialogElement>;
