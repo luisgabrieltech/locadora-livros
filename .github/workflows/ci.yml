@@ -59,6 +59,21 @@ jobs:
       - name: Compilar e executar testes unitarios e de integracao
         run: sh ./mvnw --batch-mode --no-transfer-progress clean verify
 
+      - name: Instalar Chromium para o teste de navegador
+        working-directory: frontend
+        run: npx --no-install playwright install --with-deps --only-shell chromium
+
+      - name: Validar o fluxo de locacoes em navegador
+        env:
+          DB_PORT: '15432'
+          POSTGRES_DB: locadora_e2e
+          POSTGRES_USER: locadora_e2e
+          POSTGRES_PASSWORD: BancoFicticioE2E
+        run: |
+          trap 'docker compose --project-name locadora-e2e down --volumes' EXIT
+          docker compose --project-name locadora-e2e up -d --wait --wait-timeout 90
+          npm --prefix frontend run test:e2e
+
       - name: Disponibilizar relatorios em caso de falha
         if: ${{ failure() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7

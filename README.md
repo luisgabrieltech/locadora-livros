@@ -8,9 +8,9 @@ Implementados e validados: clientes, livros, exemplares, abertura/consulta de lo
 
 O responsável pode registrar a quitação integral de um ou mais itens devolvidos, inclusive imediatamente após a devolução, sem integração bancária. A devolução encerra a cobrança do item e libera a cópia; o valor fica pendente até a quitação. Todos os exemplares devolvidos não significam locação financeiramente quitada. Consulte [requisitos](docs/requirements.md), [arquitetura](docs/architecture.md) e [roadmap](docs/roadmap.md).
 
-## Interface Angular — primeira entrega
+## Interface Angular
 
-Login do operador e tela de Clientes com listagem paginada, cadastro e edição. Catálogo, locações, devolução e pagamento continuam pela API até as próximas entregas de telas.
+A interface permite gerenciar clientes e catálogo e abrir, consultar, devolver e quitar locações por exemplar.
 
 Com a API em execução na porta 8080, abra outro PowerShell na raiz:
 
@@ -49,11 +49,39 @@ Java 22, Spring Boot 4.1.2, Maven 3.9.9 via Wrapper, Spring MVC, Bean Validation
 ## Requisitos locais
 
 - JDK 22 e JAVA_HOME apontando para sua instalação.
-- Docker Desktop em execução, no modo de containers Linux, com Docker Compose.
+- Docker com Compose e acesso ao daemon. No Windows, use Docker Desktop com containers Linux.
+- Node 24.19.0 e npm para o frontend.
 - Internet no primeiro build e no primeiro download das imagens.
-- Portas locais 8080 (API) e 5432 (banco) disponíveis. O banco permite alterar DB_PORT.
+- Portas locais 8080 (API), 4200 (frontend) e 5432 (banco) disponíveis. O banco permite alterar DB_PORT.
 
 Não é necessário instalar Maven globalmente.
+
+## Executar no Linux ou macOS
+
+Na primeira execução, clone o projeto e crie o arquivo de configuração:
+
+```bash
+git clone https://github.com/luisgabrieltech/locadora-livros.git
+cd locadora-livros
+cp .env.example .env
+```
+
+Preencha `POSTGRES_PASSWORD` e `APP_PASSWORD` no `.env` com senhas locais diferentes, alfanuméricas e sem aspas. Com o JDK 22 e o Node 24.19.0 no PATH, inicie o banco e a API:
+
+```bash
+docker compose up -d --wait
+sh ./mvnw spring-boot:run
+```
+
+Em outro terminal, a partir da raiz do projeto:
+
+```bash
+cd frontend
+npm ci
+npm start
+```
+
+Abra http://127.0.0.1:4200 e entre com o operador configurado no `.env`.
 
 ## Executar no PowerShell
 
@@ -120,9 +148,9 @@ java -jar target/locadora-livros-0.1.0-SNAPSHOT.jar
 
 ## Integração contínua e colaboração
 
-A [pipeline de CI](.github/workflows/ci.yml) está preparada para pull requests destinados a main, pushes em main e execução manual. Usa Java 22, Maven Wrapper e Docker para rodar clean verify. Em caso de falha, disponibiliza os relatórios dos testes por sete dias. Nenhum secret do projeto ou .env é necessário para os testes.
+A [pipeline de CI](.github/workflows/ci.yml) está preparada para pull requests destinados a main, pushes em main e execução manual. Usa Java 22, Maven Wrapper e Docker para rodar clean verify. Também testa em Chromium a abertura de uma locação com dois exemplares, as devoluções e as quitações até o encerramento. O cenário utiliza PostgreSQL isolado no runner. Em caso de falha, a CI disponibiliza os relatórios por sete dias. Consulte as [instruções para executar o teste de navegador](frontend/README.md#teste-de-ponta-a-ponta).
 
-As branches foram publicadas e a integração da pipeline está no [PR #1](https://github.com/luisgabrieltech/locadora-livros/pull/1). Confira o resultado correspondente ao último commit na aba Checks do PR ou em [Actions](https://github.com/luisgabrieltech/locadora-livros/actions). A proteção de main ainda depende de configuração no GitHub. Consulte [fluxo Git/GitHub e checklist de publicação](docs/github.md). Há um template de Pull Request com objetivo, alterações, validação e riscos.
+As branches foram publicadas e a integração da pipeline está no [PR #1](https://github.com/luisgabrieltech/locadora-livros/pull/1). Confira o resultado correspondente ao último commit na aba Checks do PR ou em [Actions](https://github.com/luisgabrieltech/locadora-livros/actions). A proteção de main exige pull request atualizado e o check Build e testes aprovado. Consulte [fluxo Git/GitHub e checklist de publicação](docs/github.md). Há um template de Pull Request com objetivo, alterações, validação e riscos.
 
 ## Usar PostgreSQL já instalado
 

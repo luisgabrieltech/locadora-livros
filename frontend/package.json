@@ -7,8 +7,9 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --watch=false",
-    "format:check": "prettier --check src proxy.conf.json angular.json package.json",
-    "format": "prettier --write src proxy.conf.json angular.json package.json"
+    "format:check": "prettier --check src e2e playwright.config.ts proxy.conf.json angular.json package.json",
+    "format": "prettier --write src e2e playwright.config.ts proxy.conf.json angular.json package.json",
+    "test:e2e": "playwright test"
   },
   "private": true,
   "license": "MIT",
@@ -30,6 +31,7 @@
     "@angular/build": "^22.2.7",
     "@angular/cli": "^22.2.7",
     "@angular/compiler-cli": "^22.2.0",
+    "@playwright/test": "1.65.1",
     "jsdom": "^30.0.0",
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",
