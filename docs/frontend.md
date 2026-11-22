@@ -35,7 +35,7 @@ Estado: implementação validada localmente e preparada para PR; conferir a CI d
 ## Próximas entregas
 
 - FRONT-002: catálogo implementado. Veja a validação abaixo.
-- FRONT-003: abertura/detalhe de locações, devolução e quitação por item.
+- FRONT-003: consulta, abertura, devolução e quitação por exemplar implementadas.
 - Consolidar validação do fluxo completo quando essas telas existirem. Não declarar o frontend completo antes disso.
 
 ## FRONT-002 — Catálogo
@@ -45,3 +45,13 @@ A rota protegida /catalogo dá acesso às seções Livros e Exemplares. Ambas co
 Em 22/11/2026, `npm run format:check`, `npm test` e `npm run build` passaram com o Node 26.13.1 instalado localmente. A suíte aprovou 23 testes, quatro deles do catálogo. Os testes novos cobrem remoção e rejeição de ISBN, seleção de livro em outra página, exibição de disponibilidade e conflitos por código duplicado ou histórico de locação. A versão configurada para o projeto permanece a indicada no [README do frontend](../frontend/README.md).
 
 Em 22/11/2026, o teste em Brave com viewport de 390 px, API e PostgreSQL locais confirmou login, acesso ao catálogo, rejeição de ISBN inválido, cadastro de livro, remoção de ISBN na edição e cadastro de exemplar vinculado. A listagem mostrou o título, o código e a situação Disponível sem rolagem horizontal da página. O livro e o exemplar fictícios ficaram no banco local.
+
+## FRONT-003 — Consulta de locações
+
+A rota protegida /locacoes lista as locações abertas por padrão. O operador pode paginar e filtrar por situação, incluindo atrasos, pagamentos pendentes e histórico completo. Atraso e pagamento pendente podem aparecer ao mesmo tempo. A consulta de itens mostra o código da cópia, o título do livro, a previsão de devolução e as datas registradas de devolução e pagamento. [Contrato de consultas](consultas-locacoes-api.md)
+
+Em **Nova locação**, o operador escolhe um cliente e exemplares disponíveis em listas paginadas e informa a previsão de devolução de cada cópia. A API define a data de retirada e os preços e aplica as regras de disponibilidade e bloqueio. Em caso de conflito, a interface conserva a seleção e os prazos. [Contrato de abertura](locacoes-api.md)
+
+No detalhe, **Devolver** aparece para itens emprestados. A devolução apura o valor pela API e a cópia passa a oferecer **Quitar** enquanto houver pagamento pendente. A confirmação da quitação registra o recebimento do valor integral apurado. A página atualiza a lista e mantém o detalhe após cada operação, inclusive quando a locação deixa de atender ao filtro escolhido. [Devoluções](devolucoes-api.md) · [Quitação](pagamentos-api.md)
+
+A validação em Brave com API e PostgreSQL isolados confirmou a abertura de uma locação fictícia com dois exemplares, a indisponibilidade após a retirada, a liberação individual na devolução e o encerramento somente após a segunda quitação. A locação encerrada apareceu no filtro de histórico. A tela apresentou o código e o título das duas cópias durante o fluxo.

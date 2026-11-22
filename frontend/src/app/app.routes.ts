@@ -19,6 +19,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./catalogo/catalogo').then((m) => m.Catalogo),
   },
+  {
+    path: 'locacoes',
+    title: 'Locações | Locadora de livros',
+    canActivate: [authGuard],
+    loadComponent: () => import('./locacoes/locacoes').then((m) => m.Locacoes),
+  },
   { path: '', pathMatch: 'full', redirectTo: 'clientes' },
   { path: '**', redirectTo: 'clientes' },
 ];
