@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { mensagemErro } from '../core/api-error';
 import { Sidebar } from '../sidebar';
+import { NovaLocacao } from './nova-locacao';
 
 interface ResumoLocacao {
   id: string;
@@ -37,13 +38,15 @@ interface DetalheLocacao {
 
 @Component({
   selector: 'app-locacoes',
-  imports: [Sidebar, DatePipe],
+  imports: [Sidebar, DatePipe, NovaLocacao],
   templateUrl: './locacoes.html',
   styles: '.locacao-detalhe { margin-top: 1rem; }',
 })
 export class Locacoes {
   private readonly http = inject(HttpClient);
   private readonly destroyRef = inject(DestroyRef);
+  protected readonly criando = signal(false);
+  protected readonly sucesso = signal('');
   protected readonly situacao = signal('ABERTA');
   protected readonly pagina = signal<PaginaLocacoes | null>(null);
   protected readonly carregando = signal(false);
@@ -56,6 +59,12 @@ export class Locacoes {
 
   constructor() {
     this.carregar(0);
+  }
+
+  protected registrarAbertura() {
+    this.criando.set(false);
+    this.sucesso.set('Locação aberta com sucesso.');
+    this.filtrar('ABERTA');
   }
 
   protected filtrar(situacao: string) {

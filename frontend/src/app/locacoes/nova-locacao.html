@@ -1,0 +1,142 @@
+<section class="customer-panel" aria-labelledby="nova-locacao">
+  <div class="panel-heading">
+    <h2 id="nova-locacao">Nova locação</h2>
+    <button type="button" class="button quiet" [disabled]="salvando()" (click)="cancelada.emit()">
+      Cancelar
+    </button>
+  </div>
+  <div class="panel-heading">
+    @if (cliente(); as selecionado) {
+      <p><strong>Cliente</strong> {{ selecionado.rotulo }}</p>
+      @if (etapa() === 'exemplar') {
+        <button
+          type="button"
+          class="text-button"
+          [disabled]="carregando() || salvando()"
+          (click)="trocarCliente()"
+        >
+          Trocar cliente
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="text-button"
+          [disabled]="carregando()"
+          (click)="escolher(selecionado)"
+        >
+          Manter cliente
+        </button>
+      }
+    }
+  </div>
+  <div class="panel-heading">
+    <h3>{{ etapa() === 'cliente' ? 'Escolha o cliente' : 'Escolha os exemplares pelo código' }}</h3>
+  </div>
+  @if (carregando()) {
+    <p class="loading-state" role="status">Carregando opções…</p>
+  } @else if (erroOpcoes()) {
+    <div class="notice error" role="alert">
+      {{ erroOpcoes() }}
+      <button
+        type="button"
+        class="text-button"
+        [disabled]="salvando()"
+        (click)="carregar(pagina())"
+      >
+        Tentar novamente
+      </button>
+    </div>
+  } @else {
+    @if (opcoes().length) {
+      <ul class="panel-heading" role="list">
+        @for (opcao of opcoes(); track opcao.id) {
+          <li>
+            <button
+              type="button"
+              class="button secondary"
+              [disabled]="salvando() || opcao.disponivel === false || jaSelecionado(opcao.id)"
+              (click)="escolher(opcao)"
+            >
+              {{ opcao.rotulo }}
+              @if (opcao.disponivel === false) {
+                <span>Indisponível</span>
+              }
+              @if (jaSelecionado(opcao.id)) {
+                <span>Selecionado</span>
+              }
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="empty-state">Nenhum registro nesta página.</p>
+    }
+    @if (totalPaginas() > 1) {
+      <div class="panel-footer">
+        <div class="pagination">
+          <button
+            type="button"
+            class="page-button"
+            aria-label="Página anterior de opções"
+            [disabled]="salvando() || pagina() === 0"
+            (click)="carregar(pagina() - 1)"
+          >
+            ‹
+          </button>
+          <span>{{ pagina() + 1 }} de {{ totalPaginas() }}</span>
+          <button
+            type="button"
+            class="page-button"
+            aria-label="Próxima página de opções"
+            [disabled]="salvando() || pagina() + 1 >= totalPaginas()"
+            (click)="carregar(pagina() + 1)"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+    }
+  }
+  @if (itens().length) {
+    <div class="panel-heading"><h3>Exemplares selecionados</h3></div>
+    <fieldset [disabled]="salvando()">
+      <legend>Informe a previsão de devolução</legend>
+      @for (item of itens(); track item.id) {
+        <div class="panel-heading">
+          <div class="field">
+            <label [for]="'prazo-' + item.id">Prazo de {{ item.rotulo }}</label>
+            <input
+              [id]="'prazo-' + item.id"
+              #prazo
+              type="date"
+              required
+              [value]="item.prazo"
+              (input)="definirPrazo(item.id, prazo.value)"
+            />
+          </div>
+          <button
+            type="button"
+            class="button quiet"
+            [attr.aria-label]="'Remover ' + item.rotulo"
+            (click)="remover(item.id)"
+          >
+            Remover
+          </button>
+        </div>
+      }
+    </fieldset>
+  }
+  @if (erro()) {
+    <p class="notice error" role="alert">{{ erro() }}</p>
+  }
+  <footer class="panel-footer">
+    <button
+      type="button"
+      class="button primary"
+      [disabled]="salvando() || carregando() || etapa() === 'cliente'"
+      (click)="salvar()"
+    >
+      {{ salvando() ? 'Abrindo locação…' : 'Abrir locação' }}
+    </button>
+  </footer>
+</section>

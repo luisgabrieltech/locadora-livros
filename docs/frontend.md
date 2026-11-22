@@ -35,7 +35,7 @@ Estado: implementação validada localmente e preparada para PR; conferir a CI d
 ## Próximas entregas
 
 - FRONT-002: catálogo implementado. Veja a validação abaixo.
-- FRONT-003: consulta inicial implementada. Abertura, devolução e quitação por item seguem previstas.
+- FRONT-003: consulta e abertura implementadas. Devolução e quitação por item seguem previstas.
 - Consolidar validação do fluxo completo quando essas telas existirem. Não declarar o frontend completo antes disso.
 
 ## FRONT-002 — Catálogo
@@ -49,3 +49,5 @@ Em 22/11/2026, o teste em Brave com viewport de 390 px, API e PostgreSQL locais 
 ## FRONT-003 — Consulta de locações
 
 A rota protegida /locacoes lista as locações abertas por padrão. O operador pode paginar e filtrar por situação, incluindo atrasos, pagamentos pendentes e histórico completo. Atraso e pagamento pendente podem aparecer ao mesmo tempo. A consulta de itens mostra o identificador de cada exemplar, a previsão de devolução e as datas registradas de devolução e pagamento. [Contrato de consultas](consultas-locacoes-api.md)
+
+Em **Nova locação**, o operador escolhe um cliente e exemplares disponíveis em listas paginadas e informa a previsão de devolução de cada cópia. A API define a data de retirada e os preços e aplica as regras de disponibilidade e bloqueio. Em caso de conflito, a interface conserva a seleção e os prazos. [Contrato de abertura](locacoes-api.md)
