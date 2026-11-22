@@ -35,7 +35,7 @@ Estado: implementação validada localmente e preparada para PR; conferir a CI d
 ## Próximas entregas
 
 - FRONT-002: catálogo implementado. Veja a validação abaixo.
-- FRONT-003: abertura/detalhe de locações, devolução e quitação por item.
+- FRONT-003: consulta inicial implementada. Abertura, devolução e quitação por item seguem previstas.
 - Consolidar validação do fluxo completo quando essas telas existirem. Não declarar o frontend completo antes disso.
 
 ## FRONT-002 — Catálogo
@@ -45,3 +45,7 @@ A rota protegida /catalogo dá acesso às seções Livros e Exemplares. Ambas co
 Em 22/11/2026, `npm run format:check`, `npm test` e `npm run build` passaram com o Node 26.13.1 instalado localmente. A suíte aprovou 23 testes, quatro deles do catálogo. Os testes novos cobrem remoção e rejeição de ISBN, seleção de livro em outra página, exibição de disponibilidade e conflitos por código duplicado ou histórico de locação. A versão configurada para o projeto permanece a indicada no [README do frontend](../frontend/README.md).
 
 Em 22/11/2026, o teste em Brave com viewport de 390 px, API e PostgreSQL locais confirmou login, acesso ao catálogo, rejeição de ISBN inválido, cadastro de livro, remoção de ISBN na edição e cadastro de exemplar vinculado. A listagem mostrou o título, o código e a situação Disponível sem rolagem horizontal da página. O livro e o exemplar fictícios ficaram no banco local.
+
+## FRONT-003 — Consulta de locações
+
+A rota protegida /locacoes lista as locações abertas por padrão. O operador pode paginar e filtrar por situação, incluindo atrasos, pagamentos pendentes e histórico completo. Atraso e pagamento pendente podem aparecer ao mesmo tempo. A consulta de itens mostra o identificador de cada exemplar, a previsão de devolução e as datas registradas de devolução e pagamento. [Contrato de consultas](consultas-locacoes-api.md)

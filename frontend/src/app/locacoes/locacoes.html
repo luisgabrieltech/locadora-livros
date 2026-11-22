@@ -1,0 +1,174 @@
+<div class="workspace">
+  <app-sidebar />
+  <div class="workspace-main">
+    <main class="page-content">
+      <div class="page-heading">
+        <div>
+          <h1>Locações</h1>
+          <p class="muted">Consulte empréstimos, devoluções e pagamentos pendentes.</p>
+        </div>
+      </div>
+      <section
+        class="customer-panel"
+        aria-labelledby="lista-locacoes"
+        [attr.aria-busy]="carregando()"
+      >
+        <div class="panel-heading">
+          <h2 id="lista-locacoes">Histórico de locações</h2>
+          <div class="pagination">
+            <label for="situacao">Situação</label>
+            <select
+              id="situacao"
+              #filtro
+              [value]="situacao()"
+              (change)="filtrar(filtro.value)"
+              [disabled]="carregando() || lendoDetalhe()"
+            >
+              <option value="">Todas</option>
+              <option value="ABERTA">Abertas</option>
+              <option value="ATRASADA">Atrasadas</option>
+              <option value="PAGAMENTO_PENDENTE">Pagamento pendente</option>
+              <option value="ENCERRADA">Encerradas</option>
+            </select>
+          </div>
+        </div>
+        @if (carregando()) {
+          <p class="loading-state" role="status">Carregando locações…</p>
+        } @else if (erro()) {
+          <div class="notice error" role="alert">
+            {{ erro() }}
+            <button type="button" class="text-button" (click)="carregar()">Tentar novamente</button>
+          </div>
+        } @else if (pagina(); as dados) {
+          @if (dados.items.length) {
+            <div class="table-scroll">
+              <table>
+                <caption class="sr-only">
+                  Locações para a situação selecionada
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Retirada</th>
+                    <th scope="col">Locação</th>
+                    <th scope="col">Situação</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (locacao of dados.items; track locacao.id) {
+                    <tr>
+                      <td>{{ locacao.dataRetirada | date: 'dd/MM/yyyy' }}</td>
+                      <th scope="row">{{ locacao.id }}</th>
+                      <td>
+                        <span>{{ locacao.encerrada ? 'Encerrada' : 'Aberta' }}</span>
+                        @if (locacao.atrasada) {
+                          <br /><span>Atrasada</span>
+                        }
+                        @if (locacao.pagamentoPendente) {
+                          <br /><span>Pagamento pendente</span>
+                        }
+                      </td>
+                      <td class="action-cell">
+                        <button
+                          type="button"
+                          class="edit-button"
+                          [disabled]="lendoDetalhe()"
+                          [attr.aria-label]="'Detalhes da locação ' + locacao.id"
+                          (click)="abrir(locacao.id)"
+                        >
+                          Ver itens
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <p class="empty-state">Nenhuma locação nesta situação.</p>
+          }
+          <footer class="panel-footer">
+            <span>{{ dados.totalElements }} locações</span>
+            <div class="pagination">
+              <button
+                type="button"
+                class="page-button"
+                aria-label="Página anterior"
+                [disabled]="lendoDetalhe() || dados.page === 0"
+                (click)="carregar(dados.page - 1)"
+              >
+                ‹
+              </button>
+              <span>{{ dados.totalPages ? dados.page + 1 : 0 }} de {{ dados.totalPages }}</span>
+              <button
+                type="button"
+                class="page-button"
+                aria-label="Próxima página"
+                [disabled]="lendoDetalhe() || dados.page + 1 >= dados.totalPages"
+                (click)="carregar(dados.page + 1)"
+              >
+                ›
+              </button>
+            </div>
+          </footer>
+        }
+      </section>
+      @if (selecionada(); as id) {
+        <section class="customer-panel locacao-detalhe" aria-labelledby="locacao-detalhe">
+          <div class="panel-heading"><h2 id="locacao-detalhe">Exemplares da locação</h2></div>
+          @if (lendoDetalhe()) {
+            <p class="loading-state" role="status">Carregando itens…</p>
+          } @else if (erroDetalhe()) {
+            <div class="notice error" role="alert">
+              {{ erroDetalhe() }}
+              <button type="button" class="text-button" (click)="abrir(id)">
+                Tentar novamente
+              </button>
+            </div>
+          } @else if (detalhe(); as dados) {
+            <div class="table-scroll">
+              <table>
+                <caption class="sr-only">
+                  Exemplares da locação
+                  {{
+                    dados.id
+                  }}
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Exemplar</th>
+                    <th scope="col">Previsão</th>
+                    <th scope="col">Devolução</th>
+                    <th scope="col">Pagamento</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of dados.itens; track item.id) {
+                    <tr>
+                      <th scope="row">{{ item.exemplarId }}</th>
+                      <td>{{ item.dataPrevistaDevolucao | date: 'dd/MM/yyyy' }}</td>
+                      <td>
+                        {{
+                          item.dataDevolucao
+                            ? (item.dataDevolucao | date: 'dd/MM/yyyy')
+                            : 'Pendente'
+                        }}
+                      </td>
+                      <td>
+                        {{
+                          item.dataPagamento
+                            ? (item.dataPagamento | date: 'dd/MM/yyyy')
+                            : 'Pendente'
+                        }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </section>
+      }
+    </main>
+  </div>
+</div>
