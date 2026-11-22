@@ -1,13 +1,10 @@
 <div class="workspace">
   <app-sidebar />
   <div class="workspace-main">
-    <header class="topbar">
-      <span>Locadora <span class="breadcrumb-divider">/</span> <strong>Catálogo</strong></span>
-    </header>
     <main class="page-content" id="conteudo">
       <div class="page-heading">
         <div>
-          <h1>Catálogo<span class="heading-dot">.</span></h1>
+          <h1>Catálogo</h1>
           <p class="muted">Gerencie os títulos e acompanhe a disponibilidade das cópias.</p>
         </div>
         <button type="button" class="button primary" (click)="abrir()" [disabled]="carregando()">
@@ -67,7 +64,11 @@
         } @else if (!erroLista()) {
           @if (lista(); as resultado) {
             @if (!resultado.pagina.items.length) {
-              <p class="empty-state">Nenhum registro nesta página.</p>
+              <p class="empty-state">
+                {{
+                  secao() === 'livros' ? 'Nenhum livro cadastrado.' : 'Nenhum exemplar cadastrado.'
+                }}
+              </p>
             } @else if (resultado.secao === 'livros') {
               <div class="table-scroll">
                 <table>
@@ -122,7 +123,11 @@
                       <tr>
                         <th scope="row">{{ exemplar.codigo }}</th>
                         <td>{{ exemplar.tituloLivro }}</td>
-                        <td>{{ exemplar.disponivel ? 'Disponível' : 'Indisponível' }}</td>
+                        <td>
+                          <span class="availability" [class.available]="exemplar.disponivel">
+                            {{ exemplar.disponivel ? 'Disponível' : 'Indisponível' }}
+                          </span>
+                        </td>
                         <td class="action-cell">
                           <button
                             type="button"

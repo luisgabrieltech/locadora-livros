@@ -100,7 +100,7 @@ describe('Tela de clientes', () => {
 
   it('mostra estado vazio e nao envia cadastro incompleto', () => {
     lista();
-    expect(element.textContent).toContain('Seus leitores vão aparecer aqui.');
+    expect(element.textContent).toContain('Nenhum cliente cadastrado.');
     botao('Novo cliente').click();
     fixture.detectChanges();
     submeter();
