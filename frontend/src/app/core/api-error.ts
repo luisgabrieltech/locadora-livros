@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
 export interface ProblemaApi {
+  detail?: string;
   errors?: Record<string, string>;
 }
 
